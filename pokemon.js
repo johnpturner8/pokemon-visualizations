@@ -27,6 +27,12 @@ d3.csv("pokemon.csv").then(
                 .domain([0, d3.max(dataset.map(d => yAccessor(d)))])
                 .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
+
+    //Color scale
+    var color = d3.scaleOrdinal()
+        .domain(["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"])
+        .range(["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD"]);
+        
     var text1 = svg
                 .append('text')
                 .attr("id", 'topbartext')
@@ -56,7 +62,7 @@ d3.csv("pokemon.csv").then(
       function(d) {
         d.x = x(d);
         d.y = y(d);
-        d.color = "green";
+        d.color = color(d.primary_type);
         d.r = 4;
       }
     );
