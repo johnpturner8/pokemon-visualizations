@@ -34,11 +34,11 @@ main {
 }
 
 
-#scatterplot{
+/* #scatterplot{
     width: 600px;
-    height: 400px;
-    background-color: lightgreen;
-}
+    height: 400px; */
+    /* background-color: lightgreen; 
+} */
 
 #boxplot{
     width: 600px;
