@@ -94,6 +94,50 @@ d3.csv("pokemon.csv").then(
                       .attr("stroke-width", "0px")
                   })
 
+    totals = new Array(8).fill(0)
+    counts = new Array(8).fill(0)
+    averages = new Array(8).fill(0.0)
+    generations = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
+    dataset.forEach(d => {
+      totals[d.gen_numerical - 1] += parseInt(yAccessor(d));
+      counts[d.gen_numerical - 1]++;
+    })
+    // console.log(totals)
+    // console.log(counts)
+    for(let i = 0; i < 8; i++){
+      // console.log(totals[i])
+      // console.log(counts[i])
+      // console.log(totals[i] / counts[i])
+      averages[i] = totals[i] / counts[i];
+    }
+    console.log(averages)
+
+    var line = svg.append("g")
+                  .selectAll("circle")
+                  .data(averages)
+                  .enter()
+                  .append('line')
+                  .style("stroke", "red")
+                  .style("stroke-width", 2)
+                  .attr("x1", function(d,i) {
+                    console.log(d)
+                    console.log(i)
+                    if(i == 0)
+                      return xScale(generations[0]);
+                    return xScale(generations[i-1])+xScale.bandwidth()/2
+                  })
+                  .attr("y1", function(d,i) {
+                    if(i == 0)
+                      return yScale(0);
+                    return yScale(averages[i-1])
+                  })
+                  .attr("x2", function(d, i) {
+                    return xScale(generations[i])+xScale.bandwidth()/2
+                  })
+                  .attr("y2", function(d,i) {
+                    return yScale(d)
+                  }); 
+
     var xAxisGen = d3.axisBottom().scale(xScale)
     var xAxis = svg.append("g")
                     .call(xAxisGen)
