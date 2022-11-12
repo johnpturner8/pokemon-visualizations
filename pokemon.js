@@ -113,15 +113,18 @@ d3.csv("pokemon.csv").then(
       }
     );
 
+    var xStr = 0.1
+    var yStr = 0.8
+    var collideStr = 1
     var layout = d3.forceSimulation(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
-                .force('x', d3.forceX(d => x(d)).strength(.05))
-                .force('y', d3.forceY(d => y(d)).strength(1))
-                .force('collisions', d3.forceCollide(d => d.r))
+                .force('x', d3.forceX(d => x(d)).strength(xStr))
+                .force('y', d3.forceY(d => y(d)).strength(yStr))
+                .force('collisions', d3.forceCollide(d => d.r).strength(collideStr))
                 .on("tick", tick)
 
     function drawNodes(){
       console.log(typesVisible)
-      return svg.append("g")
+      var n = svg.append("g")
                 .selectAll(".dot")
                 .data(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
                 .enter()
@@ -130,7 +133,8 @@ d3.csv("pokemon.csv").then(
                   .attr("class", "dot")
                   .attr("cx", d => d.x)
                   .attr("cy", d => d.y)
-                  .attr("r", d => d.r)
+                  // .transition().duration(500)
+                  // .attr("r", d => d.r)
                   .attr("fill", d => d.color)
                 .on('mouseover', function(d, i){
                     d3.select(this).attr("stroke", "black")
@@ -142,6 +146,11 @@ d3.csv("pokemon.csv").then(
                     d3.select(this)
                     .attr("stroke-width", "0px")
                 })
+      
+      n.transition().duration(500)
+      .attr("r", d => d.r)
+
+      return n
     }
 
     var node = drawNodes();
@@ -164,29 +173,58 @@ d3.csv("pokemon.csv").then(
           averages[i] = totals[i] / counts[i];
       }
 
-      return svg.append("g")
+      var line = svg.append("g")
                   .selectAll("circle")
                   .data(averages)
                   .enter()
                   .append('line')
                   .style("stroke", "red")
                   .style("stroke-width", 2)
-                  .attr("x1", function(d,i) {
-                    if(i == 0)
-                      return xScale(generations[0]);
-                    return xScale(generations[i-1])+xScale.bandwidth()/2
-                  })
-                  .attr("y1", function(d,i) {
-                    if(i == 0)
-                      return yScale(0);
-                    return yScale(averages[i-1])
-                  })
-                  .attr("x2", function(d, i) {
-                    return xScale(generations[i])+xScale.bandwidth()/2
-                  })
-                  .attr("y2", function(d,i) {
-                    return yScale(d)
-                  }); 
+      // .transition().duration(500)
+      .attr("x1", function(d,i) {
+        if(i == 0)
+          return xScale(generations[0]);
+        return xScale(generations[i-1])+xScale.bandwidth()/2
+      })
+      .attr("x2", function(d, i) {
+        return xScale(generations[i])+xScale.bandwidth()/2
+      })
+      .attr("y1", yScale(0))
+      .attr("y2", yScale(0))
+      // .transition().duration(500)
+      // .attr("y1", function(d,i) {
+      //   if(i == 0)
+      //     return yScale(0);
+      //   return yScale(averages[i-1])
+      // })
+      // .attr("x2", function(d,i) {
+      //   if(i == 0)
+      //     return xScale(generations[0]);
+      //   return xScale(generations[i-1])+xScale.bandwidth()/2
+      // })
+      // // .transition().duration(500)
+      // .attr("y2", function(d,i) {
+      //   if(i == 0)
+      //     return yScale(0);
+      //   return yScale(averages[i-1])
+      // })
+
+      
+      // .transition()
+      
+      line
+      .transition().duration(500)
+      .attr("y1", function(d,i) {
+        if(i == 0)
+          return yScale(0);
+        return yScale(averages[i-1])
+      })
+      .attr("y2", function(d,i) {
+        console.log(d)
+        return yScale(d)
+      })
+
+      return line
     }
 
     var line = drawLine()
@@ -205,26 +243,46 @@ d3.csv("pokemon.csv").then(
     // console.log(typesVisible)
     function update(){
       layout = d3.forceSimulation(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
-                .force('x', d3.forceX(d => x(d)).strength(.05))
-                .force('y', d3.forceY(d => y(d)).strength(1))
-                .force('collisions', d3.forceCollide(d => d.r))
+                .force('x', d3.forceX(d => x(d)).strength(xStr))
+                .force('y', d3.forceY(d => y(d)).strength(yStr))
+                .force('collisions', d3.forceCollide(d => d.r).strength(collideStr))
                 .on("tick", tick)
-      node.remove()
-      node = drawNodes()
-      line.remove()
-      line = drawLine()
+      console.log(typesVisible)
+      node.filter(function(d) { return !typesVisible[d.primary_type] }).transition().duration(500).attr("r", 0)
+      node.filter(function(d) { return typesVisible[d.primary_type] }).transition().duration(500).attr("r", d => d.r)
+
+      totals = new Array(8).fill(0)
+      counts = new Array(8).fill(0)
+      averages = new Array(8).fill(0.0)
+      generations = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
+      dataset.filter(function(d) { return typesVisible[d.primary_type] }).forEach(d => {
+        totals[d.gen_numerical - 1] += parseInt(yAccessor(d));
+        counts[d.gen_numerical - 1]++;
+      })
+      for(let i = 0; i < 8; i++){
+        if(totals[i] == 0)
+          averages[i] = 0
+        else
+          averages[i] = totals[i] / counts[i];
+      }
+
+      line
+      .transition().duration(500)
+      .attr("y1", function(d,i) {
+        if(i == 0)
+          return yScale(0);
+        return yScale(averages[i-1])
+      })
+      .attr("y2", function(d,i) {
+        return yScale(averages[i])
+      })
     }
 
     legend.on("mouseover", function(d) { d3.select(this).style("cursor", "pointer") })
           .on("click", function(d, i){
-            // console.log(d)
-            // console.log(typesVisible[i])
-            // console.log(typesVisible)
             typesVisible[i] = !typesVisible[i]
-            // console.log(typesVisible)
             d3.select(this).style("opacity", typesVisible[i] ? 1:0.2)
             update()
-            // node.transition()
           })
 
     select.on("mouseover", function(d) { d3.select(this).style("cursor", "pointer") })
