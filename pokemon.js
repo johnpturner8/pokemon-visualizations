@@ -2,12 +2,12 @@ d3.csv("pokemon.csv").then(
   function(dataset){
 
     var dimensions = {
-      width: 1000,
+      width: 1050,
       height: 600,
       margin:{
           top: 50,
           bottom: 50,
-          right: 10,
+          right: 150,
           left: 50
       }
     }
@@ -27,12 +27,58 @@ d3.csv("pokemon.csv").then(
                 .domain([0, d3.max(dataset.map(d => yAccessor(d)))])
                 .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
+    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"]
+    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD"]
+    // var typesVisible = new Array(types.size).fill(true)
+    var typesVisible = {}
+    types.forEach((element, index) => {
+      typesVisible[element] = true;
+    });
+    // typesVisible['normal'] = true;
 
     //Color scale
     var color = d3.scaleOrdinal()
-        .domain(["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"])
-        .range(["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD"]);
+        .domain(types)
+        .range(typeColors);
+    
+    //make color legend
+    var size = 15
+    legend = svg.selectAll("myLegend")
+      .data(types)
+      .enter()
+      .append("g")
+    
+    legendBoxes = legend.append("rect")
+      .attr("x", dimensions.width - dimensions.margin.right + 25)
+      .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5)}) 
+      .attr("width", size)
+      .attr("height", size)
+      .style("fill", function(d, i){ return typeColors[i]})
         
+    legendText = legend.append("text")
+      .attr("x", dimensions.width - dimensions.margin.right + 25 + size*1.2)
+      .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5) + (size/2)}) 
+      .style("fill", function(d, i){ return typeColors[i]})
+      .text(function(d){ return d })
+      .attr("text-anchor", "left")
+      .style("alignment-baseline", "middle")
+
+    var select = svg.append("text")
+      .attr("x", dimensions.width - dimensions.margin.right + 25)
+      .attr("y", dimensions.margin.top + (types.length)*(size+5) + size) 
+      .style("fill", "black")
+      .text("Select All")
+      .attr("text-anchor", "left")
+      .style("alignment-baseline", "middle")
+    
+    var unselect = svg.append("text")
+      .attr("x", dimensions.width - dimensions.margin.right + 25)
+      .attr("y", dimensions.margin.top + (types.length+1)*(size+5) + size) 
+      .style("fill", "black")
+      .text("Unselect All")
+      .attr("text-anchor", "left")
+      .style("alignment-baseline", "middle")
+
     var text1 = svg
                 .append('text')
                 .attr("id", 'topbartext')
@@ -67,52 +113,58 @@ d3.csv("pokemon.csv").then(
       }
     );
 
-    var layout = d3.forceSimulation(dataset)
+    var layout = d3.forceSimulation(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
                 .force('x', d3.forceX(d => x(d)).strength(.05))
                 .force('y', d3.forceY(d => y(d)).strength(1))
                 .force('collisions', d3.forceCollide(d => d.r))
                 .on("tick", tick)
 
-    var node = svg.append("g")
-                  .selectAll("circle")
-                  .data(dataset)
-                  .enter()
-                  .append("circle")
-                    .attr("class", "dot")
-                    .attr("cx", d => d.x)
-                    .attr("cy", d => d.y)
-                    .attr("r", d => d.r)
-                    .attr("fill", d => d.color)
-                  .on('mouseover', function(d, i){
-                      d3.select(this).attr("stroke", "black")
-                      .attr("stroke-width", "2px")
-                      text1.text("Pokemon: " + i.english_name)
-                      text2.text("Base Stat Total" + ": " + yAccessor(i))
-                  })
-                  .on('mouseout', function(d, i){
-                      d3.select(this)
-                      .attr("stroke-width", "0px")
-                  })
-
-    totals = new Array(8).fill(0)
-    counts = new Array(8).fill(0)
-    averages = new Array(8).fill(0.0)
-    generations = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
-    dataset.forEach(d => {
-      totals[d.gen_numerical - 1] += parseInt(yAccessor(d));
-      counts[d.gen_numerical - 1]++;
-    })
-    // console.log(totals)
-    // console.log(counts)
-    for(let i = 0; i < 8; i++){
-      // console.log(totals[i])
-      // console.log(counts[i])
-      // console.log(totals[i] / counts[i])
-      averages[i] = totals[i] / counts[i];
+    function drawNodes(){
+      console.log(typesVisible)
+      return svg.append("g")
+                .selectAll(".dot")
+                .data(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
+                .enter()
+                .append("circle")
+                // .filter(function(d) { return typesVisible[d.primary_type] })
+                  .attr("class", "dot")
+                  .attr("cx", d => d.x)
+                  .attr("cy", d => d.y)
+                  .attr("r", d => d.r)
+                  .attr("fill", d => d.color)
+                .on('mouseover', function(d, i){
+                    d3.select(this).attr("stroke", "black")
+                    .attr("stroke-width", "2px")
+                    text1.text("Pokemon: " + i.english_name)
+                    text2.text("Base Stat Total" + ": " + yAccessor(i))
+                })
+                .on('mouseout', function(d, i){
+                    d3.select(this)
+                    .attr("stroke-width", "0px")
+                })
     }
-    console.log(averages)
 
-    var line = svg.append("g")
+    var node = drawNodes();
+
+    // console.log(averages)
+
+    function drawLine(){
+      totals = new Array(8).fill(0)
+      counts = new Array(8).fill(0)
+      averages = new Array(8).fill(0.0)
+      generations = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
+      dataset.filter(function(d) { return typesVisible[d.primary_type] }).forEach(d => {
+        totals[d.gen_numerical - 1] += parseInt(yAccessor(d));
+        counts[d.gen_numerical - 1]++;
+      })
+      for(let i = 0; i < 8; i++){
+        if(totals[i] == 0)
+          averages[i] = 0
+        else
+          averages[i] = totals[i] / counts[i];
+      }
+
+      return svg.append("g")
                   .selectAll("circle")
                   .data(averages)
                   .enter()
@@ -120,8 +172,6 @@ d3.csv("pokemon.csv").then(
                   .style("stroke", "red")
                   .style("stroke-width", 2)
                   .attr("x1", function(d,i) {
-                    console.log(d)
-                    console.log(i)
                     if(i == 0)
                       return xScale(generations[0]);
                     return xScale(generations[i-1])+xScale.bandwidth()/2
@@ -137,6 +187,9 @@ d3.csv("pokemon.csv").then(
                   .attr("y2", function(d,i) {
                     return yScale(d)
                   }); 
+    }
+
+    var line = drawLine()
 
     var xAxisGen = d3.axisBottom().scale(xScale)
     var xAxis = svg.append("g")
@@ -148,8 +201,53 @@ d3.csv("pokemon.csv").then(
                     .call(yAxisGen)
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
 
+    //handle filters
+    // console.log(typesVisible)
+    function update(){
+      layout = d3.forceSimulation(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
+                .force('x', d3.forceX(d => x(d)).strength(.05))
+                .force('y', d3.forceY(d => y(d)).strength(1))
+                .force('collisions', d3.forceCollide(d => d.r))
+                .on("tick", tick)
+      node.remove()
+      node = drawNodes()
+      line.remove()
+      line = drawLine()
+    }
+
+    legend.on("mouseover", function(d) { d3.select(this).style("cursor", "pointer") })
+          .on("click", function(d, i){
+            // console.log(d)
+            // console.log(typesVisible[i])
+            // console.log(typesVisible)
+            typesVisible[i] = !typesVisible[i]
+            // console.log(typesVisible)
+            d3.select(this).style("opacity", typesVisible[i] ? 1:0.2)
+            update()
+            // node.transition()
+          })
+
+    select.on("mouseover", function(d) { d3.select(this).style("cursor", "pointer") })
+          .on("click", function(){
+
+            Object.keys(typesVisible).forEach(key => {
+              typesVisible[key] = true
+            })
+            legend.style("opacity", 1)
+            update()
+          })
+    unselect.on("mouseover", function(d) { d3.select(this).style("cursor", "pointer") })
+          .on("click", function(){
+
+            Object.keys(typesVisible).forEach(key => {
+              typesVisible[key] = false
+            })
+            legend.style("opacity", 0.2)
+            update()
+          })
+
   function tick(e) {
-    svg.selectAll("circle").attr("cx", function(d) { return d.x; })
+    svg.selectAll(".dot").attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
   }
 })
