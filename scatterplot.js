@@ -7,7 +7,7 @@ d3.csv("pokemon.csv").then(
       margin:{
           top: 50,
           bottom: 50,
-          right: 150,
+          right: 250,
           left: 50
       }
     }
@@ -99,8 +99,8 @@ d3.csv("pokemon.csv").then(
                 .attr("font-family", "sans-serif")
                 .text("Base Stat Total: ")
 
-    x = d => xScale(xAccessor(d))+xScale.bandwidth()/2
-    y = d => yScale(yAccessor(d))
+    var x = d => xScale(xAccessor(d))+xScale.bandwidth()/2
+    var y = d => yScale(yAccessor(d))
 
     
 
@@ -191,26 +191,6 @@ d3.csv("pokemon.csv").then(
       })
       .attr("y1", yScale(0))
       .attr("y2", yScale(0))
-      // .transition().duration(500)
-      // .attr("y1", function(d,i) {
-      //   if(i == 0)
-      //     return yScale(0);
-      //   return yScale(averages[i-1])
-      // })
-      // .attr("x2", function(d,i) {
-      //   if(i == 0)
-      //     return xScale(generations[0]);
-      //   return xScale(generations[i-1])+xScale.bandwidth()/2
-      // })
-      // // .transition().duration(500)
-      // .attr("y2", function(d,i) {
-      //   if(i == 0)
-      //     return yScale(0);
-      //   return yScale(averages[i-1])
-      // })
-
-      
-      // .transition()
       
       line
       .transition().duration(500)
@@ -220,7 +200,7 @@ d3.csv("pokemon.csv").then(
         return yScale(averages[i-1])
       })
       .attr("y2", function(d,i) {
-        console.log(d)
+        // console.log(d)
         return yScale(d)
       })
 
@@ -240,17 +220,8 @@ d3.csv("pokemon.csv").then(
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
 
     //handle filters
-    // console.log(typesVisible)
-    function update(){
-      layout = d3.forceSimulation(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
-                .force('x', d3.forceX(d => x(d)).strength(xStr))
-                .force('y', d3.forceY(d => y(d)).strength(yStr))
-                .force('collisions', d3.forceCollide(d => d.r).strength(collideStr))
-                .on("tick", tick)
-      console.log(typesVisible)
-      node.filter(function(d) { return !typesVisible[d.primary_type] }).transition().duration(500).attr("r", 0)
-      node.filter(function(d) { return typesVisible[d.primary_type] }).transition().duration(500).attr("r", d => d.r)
 
+    function updateLine(){
       totals = new Array(8).fill(0)
       counts = new Array(8).fill(0)
       averages = new Array(8).fill(0.0)
@@ -277,6 +248,32 @@ d3.csv("pokemon.csv").then(
         return yScale(averages[i])
       })
     }
+    
+    function update(){
+      // node.transition()
+      //   .duration(2000)
+      //   .attr("cx", d => d.x)
+      //   .attr("cy", d => d.y)
+
+      layout.nodes(dataset.filter(function(d) { return typesVisible[d.primary_type] }));
+      layout.force('x', d3.forceX(d => x(d)).strength(xStr))
+                .force('y', d3.forceY(d => y(d)).strength(yStr))
+                .force('collisions', d3.forceCollide(d => d.r).strength(collideStr))
+                .on("tick", tick)
+      layout.alpha(1).restart();
+
+      // layout = d3.forceSimulation(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
+      //           .force('x', d3.forceX(d => x(d)).strength(xStr))
+      //           .force('y', d3.forceY(d => y(d)).strength(yStr))
+      //           .force('collisions', d3.forceCollide(d => d.r).strength(collideStr))
+      //           .on("tick", tick)
+
+      node.filter(function(d) { return !typesVisible[d.primary_type] }).transition().duration(500).attr("r", 0)
+      node.filter(function(d) { return typesVisible[d.primary_type] }).transition().duration(500).attr("r", d => d.r)
+
+      updateLine()
+    }
+
 
     legend.on("mouseover", function(d) { d3.select(this).style("cursor", "pointer") })
           .on("click", function(d, i){
@@ -303,6 +300,31 @@ d3.csv("pokemon.csv").then(
             legend.style("opacity", 0.2)
             update()
           })
+
+    d3.select("#stat").on('change', function(d){
+      var selectedOption = d3.select(this).property("value")
+
+      yAccessor = d => parseInt(d[selectedOption])
+
+      yScale = d3.scaleLinear()
+                .domain([0, d3.max(dataset.map(d => yAccessor(d)))])
+                .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
+
+      yAxisGen = d3.axisLeft().scale(yScale)
+      yAxis.transition().call(yAxisGen)
+
+      x = d => xScale(xAccessor(d))+xScale.bandwidth()/2
+      y = d => yScale(yAccessor(d))
+
+      dataset.forEach(
+        function(d) {
+          d.x = x(d);
+          d.y = y(d);
+        }
+      );
+      
+      update()
+    })
 
   function tick(e) {
     svg.selectAll(".dot").attr("cx", function(d) { return d.x; })

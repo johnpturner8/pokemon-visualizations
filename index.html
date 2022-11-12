@@ -24,13 +24,25 @@
       </em>  
       
      <div class="visualizations">
-      <svg id="scatterplot"></svg>
+      <div class="flex">
+        <select name="stat" id="stat" class="rotated">
+          <option value="base_stat_total">Base Stat Total</option>
+          <option value="hp">HP</option>
+          <option value="attack">Attack</option>
+          <option value="defense">Defense</option>
+          <option value="sp_attack">Special Attack</option>
+          <option value="sp_defense">Special Defense</option>
+          <option value="speed">Speed</option>
+        </select>
+        <svg class="flex" id="scatterplot"></svg>
+      </div>
+    </div>
       <!-- <svg id="boxplot"></svg> -->
       <!-- <div class="filter"></div> -->
      </div> 
     </main>
 
-    <script src="pokemon.js"></script>
+    <script src="scatterplot.js"></script>
   </body>
 </html>
 
