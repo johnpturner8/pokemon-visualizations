@@ -1,3 +1,12 @@
+// todo
+// on click bar chart bigger + show difference to other bars
+// heatmap numbers
+// heatmap legend
+
+
+
+
+
 var width = 500
 var height = 500
 
@@ -62,16 +71,24 @@ d3.csv("pokemon.csv").then(
       .enter()
       .append("rect")
       .on("mouseover", function(d,i){
+        console.log(d)
         d3.select(this)
-        .attr("stroke", "black")
+        .attr("stroke", "blue")
         console.log(d.srcElement.__data__[1])
-        text.text("Count of Pokemon: "+ d.srcElement.__data__[1])
+        text.attr("x",  xScale(+i[0]) + xScale.bandwidth()/2)
+        .attr("y",yScale(+i[1])- 10)
+        .text(d.srcElement.__data__[1])
     })
     .on("mouseout", function(){
         d3.select(this)
         .attr("stroke", "none")
 
         text.text("")
+    })
+    .on('click', function(d,i){
+      d3.select(this)
+      .attr("fill", "blue")
+      
     })
       .attr("x", d => xScale(+d[0]))
       .attr("y", d => yScale(+d[1]))
@@ -88,7 +105,23 @@ d3.csv("pokemon.csv").then(
                     .call(yAxisGen)
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
 
-        
+    // create x-axis label
+    svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", dimensions.width/2)
+    .attr("y", dimensions.height-dimensions.margin.right)
+    .text("Generation");
+
+    // create y-axis label
+    svg.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "end")
+        .attr("x", -200)
+        .attr("y", dimensions.margin.top)
+        .attr("dy", ".75em")
+        .attr("transform", "rotate(-90)")
+        .text("Count of Pokemon");
  
     
   }
