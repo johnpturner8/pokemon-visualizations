@@ -220,6 +220,13 @@ d3.csv("pokemon.csv").then(
                     .call(yAxisGen)
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
 
+    svg.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "end")
+        .attr("x", dimensions.width/2)
+        .attr("y", dimensions.height-dimensions.margin.bottom + 50)
+        .text("Generations");
+
     //handle filters
     function nodeFilter(d){
       return typesVisible[d.primary_type] && (!finalEvolutionOnly || d.is_final_evo == "TRUE")
