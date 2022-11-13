@@ -1,12 +1,3 @@
-// todo
-// on click bar chart bigger + show difference to other bars
-// heatmap numbers
-// heatmap legend
-
-
-
-
-
 var width = 500
 var height = 500
 
@@ -159,7 +150,13 @@ d3.csv("pokemon.csv").then(
     .style("fill", d=> myColor(d.count))
 
     squares.append("text")
-    .style("fill", "black")
+    .style("fill", function(d){
+      if (d.count >10){
+        return "white"
+      }else{
+        return "black"
+      }
+    })
     .style("font-size", "14px")
     .attr("dy", ".35em")
     .attr("x", d => xScale(d.gen)+xScale.bandwidth()/2)
@@ -181,7 +178,13 @@ d3.csv("pokemon.csv").then(
 
 
   squares.append("text")
-    .style("fill", "black")
+    .style("fill", function(d){
+      if (d.count >10){
+        return "white"
+      }else{
+        return "black"
+      }
+  })
     .style("font-size", "14px")
     .attr("dy", ".35em")
     .attr("x", d => xScale(d.gen)+xScale.bandwidth()/2)
