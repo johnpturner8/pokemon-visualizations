@@ -86,11 +86,6 @@ d3.csv("pokemon.csv").then(
 
         text.text("")
     })
-    .on('click', function(d,i){
-      d3.select(this)
-      .attr("fill", "blue")
-      
-    })
     .attr("x", d => xScale(+d[0]))
     .attr("y", d => yScale(+d[1]))
     .attr("height", d => dimensions.height-dimensions.margin.bottom - yScale(+d[1]))
