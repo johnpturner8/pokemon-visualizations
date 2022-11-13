@@ -34,11 +34,11 @@ main {
 }
 
 
-#scatterplot{
-    width: 600px;
-    height: 400px;
-    background-color: lightgreen;
-}
+/* #scatterplot{ */
+    /* width: 1050px; */
+    /* height: 600px;  */
+    /* background-color: lightblue; */
+/* } */
 
 #boxplot{
     width: 600px;
@@ -51,4 +51,33 @@ main {
     height: 500px;
     background-color: lightblue;
 
+}
+
+.rotated {
+    transform: rotate(-90deg);
+}
+
+select {
+    height: min-content;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
+    margin-left: -60px;
+    margin-right: -60px;
+}
+
+.flex {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: flex-start;
+}
+
+.vertical-center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
 }
