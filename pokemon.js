@@ -29,9 +29,9 @@ d3.csv("pokemon.csv").then(
           left: 90
       }
     }
-/*
+
     // create barchart
-    var pokemonGenCount = new Map(d3.rollup(dataset, v => v.length, d => d['gen (numeric)']))
+    var pokemonGenCount = new Map(d3.rollup(dataset, v => v.length, d => d['gen_numeric']))
 
     console.log(pokemonGenCount)
 
@@ -123,8 +123,7 @@ d3.csv("pokemon.csv").then(
         .attr("dy", ".75em")
         .attr("transform", "rotate(-90)")
         .text("Count of Pokemon");
- 
-*/
+
 
         
     // create heatmap
