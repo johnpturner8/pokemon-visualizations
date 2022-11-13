@@ -29,7 +29,7 @@ d3.csv("pokemon.csv").then(
           left: 90
       }
     }
-
+/*
     // create barchart
     var pokemonGenCount = new Map(d3.rollup(dataset, v => v.length, d => d['gen (numeric)']))
 
@@ -63,13 +63,14 @@ d3.csv("pokemon.csv").then(
     .attr("dx", "-.8em")
     .attr("dy", ".15em")
     .attr("font-family", "sans-serif")
-    .text("Count per year: 0")
+    .text("")
 
-    var bars = svg.append("g")
-      .selectAll("rect")
+    var bars = svg
+      .selectAll("g")
       .data(pokemonGenCount)
-      .enter()
-      .append("rect")
+      .enter().append("g")
+      
+    bars.append("rect")
       .on("mouseover", function(d,i){
         console.log(d)
         d3.select(this)
@@ -90,10 +91,10 @@ d3.csv("pokemon.csv").then(
       .attr("fill", "blue")
       
     })
-      .attr("x", d => xScale(+d[0]))
-      .attr("y", d => yScale(+d[1]))
-      .attr("height", d => dimensions.height-dimensions.margin.bottom - yScale(+d[1]))
-      .attr("width", xScale.bandwidth())
+    .attr("x", d => xScale(+d[0]))
+    .attr("y", d => yScale(+d[1]))
+    .attr("height", d => dimensions.height-dimensions.margin.bottom - yScale(+d[1]))
+    .attr("width", xScale.bandwidth())
 
     var xAxisGen = d3.axisBottom(xScale)
     var xAxis = svg.append("g")
@@ -123,35 +124,9 @@ d3.csv("pokemon.csv").then(
         .attr("transform", "rotate(-90)")
         .text("Count of Pokemon");
  
-    
-  }
-)
+*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*  
-
+        
     // create heatmap
     var data_heatmap = new Map(d3.rollup(dataset, v => v.length,d => d['primary_type'], d => d['gen']))
     transformed_heatmap = []
@@ -191,25 +166,40 @@ d3.csv("pokemon.csv").then(
 
     var myColor = d3.scaleLinear()
     .range(["white", "#00008B"])
-    .domain([1,max_value])
+    .domain([0,max_value])
 
-    var squares = svg.append("g")
-    .selectAll("rect")
+
+    var squares = svg
+    .selectAll("g")
     .data(transformed_heatmap)
-    .enter()
+    .enter().append("g")
+
+
+     squares
     .append("rect")
     .attr("x", d => xScale(d.gen))
     .attr("y", d => yScale(d.type))
     .attr("height", d => yScale.bandwidth())
     .attr("width", xScale.bandwidth())
     .style("fill", d=> myColor(d.count))
+    .on("mouseover", function(d,i){
+      d3.select(this)
+      .attr("stroke", "grey")
+    })
+    .on("mouseout", function(){
+        d3.select(this)
+        .attr("stroke", "none")
+    })
     .on('click', function(d,i){
       // selected heatmap
-
+    
     filteredData = dataset.filter(function(d){return (d.primary_type == i.type && d.gen == i.gen)})
-
+    filteredData.forEach(function(d){
+      if(d.secondary_type == ""){
+        d.secondary_type = "normal"
+      }
+    })
     var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
-    console.log(groupedData)
     dataSelectedHeatmap = []
     //transforming the data in the right format
     for (let [key, value] of groupedData){
@@ -223,7 +213,7 @@ d3.csv("pokemon.csv").then(
                     .style("height", dimensions.height)
     svg.selectAll('*').remove()
     generations = d3.map(dataSelectedHeatmap, d => d.gen)
-    
+    console.log(generations)
     types = d3.map(dataSelectedHeatmap, d => d.type)
 
     var xScale = d3.scaleBand()
@@ -248,16 +238,27 @@ d3.csv("pokemon.csv").then(
     .range(["white", "#00008B"])
     .domain([0,max_value])
 
-    var squares = svg.append("g")
-    .selectAll("rect")
+    var squares = svg
+    .selectAll("g")
     .data(dataSelectedHeatmap)
-    .enter()
+    .enter().append("g")
+
+   squares
     .append("rect")
     .attr("x", d => xScale(d.gen))
     .attr("y", d => yScale(d.type))
     .attr("height", d => yScale.bandwidth())
     .attr("width", xScale.bandwidth())
     .style("fill", d=> myColor(d.count))
+
+    squares.append("text")
+    .style("fill", "black")
+    .style("font-size", "14px")
+    .attr("dy", ".35em")
+    .attr("x", d => xScale(d.gen)+xScale.bandwidth()/2)
+    .attr("y", d => yScale(d.type)+ yScale.bandwidth()/2)
+    .style("style", "label")
+    .text(d => d.count);
 
     var xAxisGen = d3.axisBottom(xScale)
     var xAxis = svg.append("g")
@@ -272,7 +273,14 @@ d3.csv("pokemon.csv").then(
     })
 
 
-
+  squares.append("text")
+    .style("fill", "black")
+    .style("font-size", "14px")
+    .attr("dy", ".35em")
+    .attr("x", d => xScale(d.gen)+xScale.bandwidth()/2)
+    .attr("y", d => yScale(d.type)+ yScale.bandwidth()/2)
+    .style("style", "label")
+    .text(d => d.count);
 
     var xAxisGen = d3.axisBottom(xScale)
     var xAxis = svg.append("g")
@@ -286,4 +294,29 @@ d3.csv("pokemon.csv").then(
 
 
 
-*/
+    
+  }
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
