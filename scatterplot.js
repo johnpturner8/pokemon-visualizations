@@ -79,6 +79,15 @@ d3.csv("pokemon.csv").then(
       .attr("text-anchor", "left")
       .style("alignment-baseline", "middle")
 
+    var finalEvolutionOnly = false;
+    var setEvolution = svg.append("text")
+      .attr("x", dimensions.width - dimensions.margin.right + 25)
+      .attr("y", dimensions.margin.top + (types.length+2)*(size+5) + size*2) 
+      .style("fill", "black")
+      .text("Show final evolutions only")
+      .attr("text-anchor", "left")
+      .style("alignment-baseline", "middle")
+
     var text1 = svg
                 .append('text')
                 .attr("id", 'topbartext')
@@ -101,8 +110,6 @@ d3.csv("pokemon.csv").then(
 
     var x = d => xScale(xAccessor(d))+xScale.bandwidth()/2
     var y = d => yScale(yAccessor(d))
-
-    
 
     dataset.forEach(
       function(d) {
@@ -129,12 +136,9 @@ d3.csv("pokemon.csv").then(
                 .data(dataset.filter(function(d) { return typesVisible[d.primary_type] }))
                 .enter()
                 .append("circle")
-                // .filter(function(d) { return typesVisible[d.primary_type] })
                   .attr("class", "dot")
                   .attr("cx", d => d.x)
                   .attr("cy", d => d.y)
-                  // .transition().duration(500)
-                  // .attr("r", d => d.r)
                   .attr("fill", d => d.color)
                 .on('mouseover', function(d, i){
                     d3.select(this).attr("stroke", "black")
@@ -154,8 +158,6 @@ d3.csv("pokemon.csv").then(
     }
 
     var node = drawNodes();
-
-    // console.log(averages)
 
     function drawLine(){
       totals = new Array(8).fill(0)
@@ -180,17 +182,16 @@ d3.csv("pokemon.csv").then(
                   .append('line')
                   .style("stroke", "red")
                   .style("stroke-width", 2)
-      // .transition().duration(500)
-      .attr("x1", function(d,i) {
-        if(i == 0)
-          return xScale(generations[0]);
-        return xScale(generations[i-1])+xScale.bandwidth()/2
-      })
-      .attr("x2", function(d, i) {
-        return xScale(generations[i])+xScale.bandwidth()/2
-      })
-      .attr("y1", yScale(0))
-      .attr("y2", yScale(0))
+                  .attr("x1", function(d,i) {
+                    if(i == 0)
+                      return xScale(generations[0]);
+                    return xScale(generations[i-1])+xScale.bandwidth()/2
+                  })
+                  .attr("x2", function(d, i) {
+                    return xScale(generations[i])+xScale.bandwidth()/2
+                  })
+                  .attr("y1", yScale(0))
+                  .attr("y2", yScale(0))
       
       line
       .transition().duration(500)
@@ -220,13 +221,16 @@ d3.csv("pokemon.csv").then(
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
 
     //handle filters
+    function nodeFilter(d){
+      return typesVisible[d.primary_type] && (!finalEvolutionOnly || d.is_final_evo == "TRUE")
+    }
 
     function updateLine(){
       totals = new Array(8).fill(0)
       counts = new Array(8).fill(0)
       averages = new Array(8).fill(0.0)
       generations = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
-      dataset.filter(function(d) { return typesVisible[d.primary_type] }).forEach(d => {
+      dataset.filter(function(d) { return nodeFilter(d) }).forEach(d => {
         totals[d.gen_numerical - 1] += parseInt(yAccessor(d));
         counts[d.gen_numerical - 1]++;
       })
@@ -255,7 +259,7 @@ d3.csv("pokemon.csv").then(
       //   .attr("cx", d => d.x)
       //   .attr("cy", d => d.y)
 
-      layout.nodes(dataset.filter(function(d) { return typesVisible[d.primary_type] }));
+      layout.nodes(dataset.filter(function(d) { return nodeFilter(d) }));
       layout.force('x', d3.forceX(d => x(d)).strength(xStr))
                 .force('y', d3.forceY(d => y(d)).strength(yStr))
                 .force('collisions', d3.forceCollide(d => d.r).strength(collideStr))
@@ -268,8 +272,8 @@ d3.csv("pokemon.csv").then(
       //           .force('collisions', d3.forceCollide(d => d.r).strength(collideStr))
       //           .on("tick", tick)
 
-      node.filter(function(d) { return !typesVisible[d.primary_type] }).transition().duration(500).attr("r", 0)
-      node.filter(function(d) { return typesVisible[d.primary_type] }).transition().duration(500).attr("r", d => d.r)
+      node.filter(function(d) { return !nodeFilter(d) }).transition().duration(500).attr("r", 0)
+      node.filter(function(d) { return nodeFilter(d) }).transition().duration(500).attr("r", d => d.r)
 
       updateLine()
     }
@@ -300,6 +304,13 @@ d3.csv("pokemon.csv").then(
             legend.style("opacity", 0.2)
             update()
           })
+
+    setEvolution.on("mouseover", function(d) { d3.select(this).style("cursor", "pointer") })
+                .on("click", function(){
+                  d3.select(this).text(finalEvolutionOnly ? "Show final evolutions only":"Show all evolutions")
+                  finalEvolutionOnly = !finalEvolutionOnly
+                  update()
+                })
 
     d3.select("#stat").on('change', function(d){
       var selectedOption = d3.select(this).property("value")
