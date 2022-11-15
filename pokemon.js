@@ -8,7 +8,7 @@ var svg = d3.select("#pokemon")
 
 d3.csv("pokemon.csv").then(
   function(dataset){
-    console.log(dataset)
+
 
     var dimensions = {
       width: 1050,
@@ -24,8 +24,6 @@ d3.csv("pokemon.csv").then(
     // create barchart
     var pokemonGenCount = new Map(d3.rollup(dataset, v => v.length, d => d['gen']))
 
-    console.log(pokemonGenCount)
-    d3.map(pokemonGenCount, d => console.log(d[0]))
     var svg = d3.select("#barchart")
                     .style("width", dimensions.width)
                     .style("height", dimensions.height)
@@ -63,10 +61,8 @@ d3.csv("pokemon.csv").then(
       
     bars.append("rect")
       .on("mouseover", function(d,i){
-        console.log(d)
         d3.select(this)
         .attr("stroke", "black")
-        console.log(d.srcElement.__data__[1])
         text.attr("x",  xScale(i[0]) + xScale.bandwidth()/2)
         .attr("y",yScale(+i[1])- 10)
         .text(d.srcElement.__data__[1])

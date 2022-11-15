@@ -49,6 +49,7 @@ d3.csv("pokemon.csv").then(
       .append("g")
     
     legendBoxes = legend.append("rect")
+    
       .attr("x", dimensions.width - dimensions.margin.right + 25)
       .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5)}) 
       .attr("width", size)
