@@ -26,8 +26,8 @@
      <div class="visualizations">
       <!-- <div id="my_dataviz"></div> -->
 
-      <div class="flex">
-        <!-- This is a lazy fix to align barchart and scatterplot. TODO: refactor this -->
+      <!-- This is a lazy fix to align barchart and scatterplot. TODO: refactor this -->
+      <!-- <div class="flex">
         <select name="dummy" id="dummy" class="rotated" style="visibility: hidden;">
           <option value="1">Base Stat Total</option>
           <option value="2">HP</option>
@@ -38,7 +38,7 @@
           <option value="7">Speed</option>
         </select>
         <svg class="flex" id="barchart"></svg>
-      </div>
+      </div> -->
       <div class="flex">
         <select name="stat" id="stat" class="rotated">
           <option value="base_stat_total">Base Stat Total</option>
@@ -50,21 +50,21 @@
           <option value="speed">Speed</option>
         </select>
         <svg class="flex" id="scatterplot"></svg>
-      </div>
-      <div class = "flex">
-        <div id="graph">
+        <div id="graph" class="flex">
           <svg id="heatmap"></svg>
           <div class="tooltip"></div>
         </div>
-        <div class="info"></div>
-        <svg id="selected_heatmap"></svg>
+        <svg id="selected_heatmap" class="flex"></svg>
       </div>
+      <!-- <div class = "flex">
+        
+      </div> -->
      </div> 
     </main>
 
-    <script src="pokemon.js"></script>
-    <script src="scatterplot.js"></script>
-    <script src="heatmap.js"></script>
+    <script type="module" src="pokemon.js"></script>
+    <script type="module" src="scatterplot.js"></script>
+    <script type="module" src="heatmap.js"></script>
   </body>
 </html>
 

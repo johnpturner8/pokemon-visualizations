@@ -1,30 +1,25 @@
-var width = 500
-var height = 500
-var previousElement = 0
-var previousElementColor = 0
-var previousXYElement = 0
-var previousFontSize = 0 
-var svg = d3.select("#pokemon")
-  .style("width", width)
-  .style("height", height)  
+import {updateFilters} from './scatterplot.js'
 
-d3.csv("pokemon.csv").then(
-  function(dataset){
+export function heatmap(dataset){
+    var previousElement = 0
+    var previousColor = 0
+    var previousXYElement = 0
+    var previousFontSize = 0 
 
     var dimensions = {
-      width: 1050,
+      width: 400,
       height: 600,
       margin:{
           top: 50,
           bottom: 50,
-          right: 50,
+          right: 20,
           left: 50
       }
     }
         
     // create heatmap
     var data_heatmap = new Map(d3.rollup(dataset, v => v.length,d => d['primary_type'], d => d['gen']))
-    transformed_heatmap = []
+    var transformed_heatmap = []
     
     //transforming the data in the right format
     for (let [key, value] of data_heatmap){
@@ -37,21 +32,25 @@ d3.csv("pokemon.csv").then(
                     .style("width", dimensions.width)
                     .style("height", dimensions.height)
                     
-    generations = d3.map(transformed_heatmap, d => d.gen)
-    types = d3.map(transformed_heatmap, d => d.type)
-    
+    var generations = d3.map(transformed_heatmap, d => d.gen)
+    // types = d3.map(transformed_heatmap, d => d.type)
+    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
+    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
 
     var xScale = d3.scaleBand()
-    .domain(generations)
-    .range([dimensions.margin.left +50 ,dimensions.width - dimensions.margin.right])
+      .domain(generations)
+      .range([dimensions.margin.left +50 ,dimensions.width - dimensions.margin.right])
   
 
     var yScale = d3.scaleBand()
-    .domain(types)
-    .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
+      .domain(types.slice(0, -1))
+      .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
+    var colorScale = d3.scaleOrdinal()
+      .domain(types)
+      .range(typeColors)
 
-    max_value = 0
+    var max_value = 0
     transformed_heatmap.forEach(function(d){
       if (max_value < d.count){
         max_value = d.count
@@ -101,16 +100,17 @@ d3.csv("pokemon.csv").then(
       previousColor = d3.select(this).style("fill")
       previousElement = this
 
+      updateFilters([i.gen], [i.type]);
 
       // selected heatmap
-    filteredData = dataset.filter(function(d){return (d.primary_type == i.type && d.gen == i.gen)})
+    var filteredData = dataset.filter(function(d){return (d.primary_type == i.type && d.gen == i.gen)})
     filteredData.forEach(function(d){
       if(d.secondary_type == ""){
         d.secondary_type = "normal"
       }
     })
     var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
-    dataSelectedHeatmap = []
+    var dataSelectedHeatmap = []
     //transforming the data in the right format
     for (let [key, value] of groupedData){
       dataSelectedHeatmap.push({"type": key, "gen": i.gen, "count": value})
@@ -128,13 +128,13 @@ d3.csv("pokemon.csv").then(
 
     generations = d3.map(dataSelectedHeatmap, d => d.gen)
     generations.forEach((d, j) => generations[j] = generations[j] + ", " + i.type)
-    selected_types = d3.map(dataSelectedHeatmap, d => d.type)
+    var selected_types = d3.map(dataSelectedHeatmap, d => d.type)
 
-    obj = {}
+    var obj = {}
     dataSelectedHeatmap.forEach(function(d){
       obj[d.type] = d.count
     })
-    stack_data_formating = [obj]
+    var stack_data_formating = [obj]
 
     var xScale = d3.scaleBand()
     .domain(generations)
@@ -144,56 +144,9 @@ d3.csv("pokemon.csv").then(
     .domain([0, i.count])
     .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
-
-        
     var stackedData = d3.stack()
                         .keys(selected_types)
                         (stack_data_formating)
-
-
-    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
-    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
-   
-    
-    var colorScale = d3.scaleOrdinal()
-    .domain(types)
-    .range(typeColors)
-
-    //make color legend
-    var size = 15
-    legend = svg.selectAll("myLegend")
-      .data(types)
-      .enter()
-      .append("g")
-    
-    legendBoxes = legend.append("rect")
-      .attr("x", dimensions.width/4 + 20)
-      .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5)}) 
-      .attr("width", size)
-      .attr("height", size)
-      .style("fill", function(d, i){ return typeColors[i]})
-      .style("opacity", function(d){
-        if (selected_types.includes(d)){
-          return 1
-        }else{
-          return 0.2
-        }
-      })
-        
-    legendText = legend.append("text")
-      .attr("x", dimensions.width/4 + 20 + size*1.2)
-      .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5) + (size/2)}) 
-      .style("fill", function(d, i){ return typeColors[i]})
-      .text(function(d){ return d })
-      .attr("text-anchor", "left")
-      .style("alignment-baseline", "middle")
-      .style("opacity", function(d){
-        if (selected_types.includes(d)){
-          return 1
-        }else{
-          return 0.2
-        }
-      })
 
     var bars = svg.append("g")
                   .selectAll("g")
@@ -277,8 +230,10 @@ d3.csv("pokemon.csv").then(
                   }
 
                   previousXYElement = this
+
+                  updateFilters([i], types.slice(0, -1));
             
-                  filteredData = dataset.filter(function(d){return (d.gen == i)})
+                  var filteredData = dataset.filter(function(d){return (d.gen == i)})
                   filteredData.forEach(function(d){
                     if(d.secondary_type == ""){
                       d.secondary_type = "none"
@@ -286,7 +241,7 @@ d3.csv("pokemon.csv").then(
                   })
 
                   var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
-                  dataSelectedHeatmap = []
+                  var dataSelectedHeatmap = []
                   //transforming the data in the right format
                   for (let [key, value] of groupedData){
                     dataSelectedHeatmap.push({"type": key, "gen": i, "count": value})
@@ -303,13 +258,13 @@ d3.csv("pokemon.csv").then(
                   .attr("class", "selected")
 
                   generations = d3.map(dataSelectedHeatmap, d => d.gen)
-                  selected_types = d3.map(dataSelectedHeatmap, d => d.type)
+                  var selected_types = d3.map(dataSelectedHeatmap, d => d.type)
 
-                  obj = {}
+                  var obj = {}
                   dataSelectedHeatmap.forEach(function(d){
                     obj[d.type] = d.count
                   })
-                  stack_data_formating = [obj]
+                  var stack_data_formating = [obj]
 
                   var xScale = d3.scaleBand()
                   .domain(generations)
@@ -318,59 +273,10 @@ d3.csv("pokemon.csv").then(
                   var yScale = d3.scaleLinear()
                   .domain([0, filteredData.length])
                   .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
-
-
-                      
+   
                   var stackedData = d3.stack()
                                       .keys(selected_types)
                                       (stack_data_formating)
-
-
-                  var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
-                  var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
-                
-                  
-                  var colorScale = d3.scaleOrdinal()
-                  .domain(types)
-                  .range(typeColors)
-
-                  //make color legend
-                  var size = 15
-                  legend = svg.selectAll("myLegend")
-                    .data(types)
-                    .enter()
-                    .append("g")
-                  
-                  legendBoxes = legend.append("rect")
-                    .attr("x", dimensions.width/4 + 20)
-                    .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5)}) 
-                    .attr("width", size)
-                    .attr("height", size)
-                    .style("fill", function(d, i){ 
-                      return typeColors[i]
-                    })
-                    .style("opacity", function(d){
-                      if (selected_types.includes(d)){
-                        return 1
-                      }else{
-                        return 0.2
-                      }
-                    })
-                      
-                  legendText = legend.append("text")
-                    .attr("x", dimensions.width/4 + 20 + size*1.2)
-                    .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5) + (size/2)}) 
-                    .style("fill", function(d, i){ return typeColors[i]})
-                    .text(function(d){ return d })
-                    .attr("text-anchor", "left")
-                    .style("alignment-baseline", "middle")
-                    .style("opacity", function(d){
-                      if (selected_types.includes(d)){
-                        return 1
-                      }else{
-                        return 0.2
-                      }
-                    })
 
                   var bars = svg.append("g")
                                 .selectAll("g")
@@ -416,13 +322,12 @@ d3.csv("pokemon.csv").then(
               
               })
 
-
-
     var yAxisGen = d3.axisLeft().scale(yScale)
     var yAxis = svg.append("g")
                     .call(yAxisGen)
                     .style("transform", `translateX(${dimensions.margin.left+50}px)`)
                     .selectAll("g")
+                    
                 .on("mouseover", function(d,i){
                   d3.select(this)
                   .style("font-size", "18px")
@@ -442,15 +347,17 @@ d3.csv("pokemon.csv").then(
                     d3.select(previousXYElement).attr("class", "unselected").style("font-size", "10px")
                   }
                   previousXYElement = this
+
+                  updateFilters(["I", "II", "III", "IV", "V", "VI", "VII", "VIII"], [i]);
             
-                  filteredData = dataset.filter(function(d){return (d.gen == i)})
+                  var filteredData = dataset.filter(function(d){return (d.gen == i)})
                   filteredData.forEach(function(d){
                     if(d.secondary_type == ""){
                       d.secondary_type = "none"
                     }
                   })
 
-                  filteredData = dataset.filter(function(d){return (d.primary_type == i)})
+                  var filteredData = dataset.filter(function(d){return (d.primary_type == i)})
                   filteredData.forEach(function(d){
                     if(d.secondary_type == ""){
                       d.secondary_type = "none"
@@ -458,7 +365,7 @@ d3.csv("pokemon.csv").then(
                   })
 
                   var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
-                  dataSelectedHeatmap = []
+                  var dataSelectedHeatmap = []
                   //transforming the data in the right format
                   for (let [key, value] of groupedData){
                     dataSelectedHeatmap.push({"type": key, "gen": i, "count": value})
@@ -475,13 +382,13 @@ d3.csv("pokemon.csv").then(
                   .attr("class", "selected")
 
                   generations = d3.map(dataSelectedHeatmap, d => d.gen)
-                  selected_types = d3.map(dataSelectedHeatmap, d => d.type)
+                  var selected_types = d3.map(dataSelectedHeatmap, d => d.type)
 
-                  obj = {}
+                  var obj = {}
                   dataSelectedHeatmap.forEach(function(d){
                     obj[d.type] = d.count
                   })
-                  stack_data_formating = [obj]
+                  var stack_data_formating = [obj]
 
                   var xScale = d3.scaleBand()
                   .domain(generations)
@@ -490,57 +397,10 @@ d3.csv("pokemon.csv").then(
                   var yScale = d3.scaleLinear()
                   .domain([0, filteredData.length])
                   .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
-
-
-                      
+ 
                   var stackedData = d3.stack()
                                       .keys(selected_types)
                                       (stack_data_formating)
-
-
-                  var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
-                  var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
-                
-                  
-                  var colorScale = d3.scaleOrdinal()
-                  .domain(types)
-                  .range(typeColors)
-
-                  //make color legend
-                  var size = 15
-                  legend = svg.selectAll("myLegend")
-                    .data(types)
-                    .enter()
-                    .append("g")
-                  
-                  legendBoxes = legend.append("rect")
-                    .attr("x", dimensions.width/4 + 20)
-                    .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5)}) 
-                    .attr("width", size)
-                    .attr("height", size)
-                    .style("fill", function(d, i){ return typeColors[i]})
-                    .style("opacity", function(d){
-                      if (selected_types.includes(d)){
-                        return 1
-                      }else{
-                        return 0.2
-                      }
-                    })
-                      
-                  legendText = legend.append("text")
-                    .attr("x", dimensions.width/4 + 20 + size*1.2)
-                    .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5) + (size/2)}) 
-                    .style("fill", function(d, i){ return typeColors[i]})
-                    .text(function(d){ return d })
-                    .attr("text-anchor", "left")
-                    .style("alignment-baseline", "middle")
-                    .style("opacity", function(d){
-                      if (selected_types.includes(d)){
-                        return 1
-                      }else{
-                        return 0.2
-                      }
-                    })
 
                   var bars = svg.append("g")
                                 .selectAll("g")
@@ -586,7 +446,10 @@ d3.csv("pokemon.csv").then(
                       .text("Count of Pokemon");
                 })
 
-                  // create x-axis label
+    yAxis.select(".tick text")
+      .style("fill", function(d, i){ return typeColors[i]})
+
+    // create x-axis label
     svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
@@ -613,14 +476,14 @@ d3.csv("pokemon.csv").then(
 
 
           // selected heatmap
-    filteredData = dataset.filter(function(d){return (d.primary_type == "fire" && d.gen == "I")})
+    var filteredData = dataset.filter(function(d){return (d.primary_type == "fire" && d.gen == "I")})
     filteredData.forEach(function(d){
       if(d.secondary_type == ""){
         d.secondary_type = "none"
       }
     })
     var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
-    dataSelectedHeatmap = []
+    var dataSelectedHeatmap = []
     //transforming the data in the right format
     for (let [key, value] of groupedData){
       dataSelectedHeatmap.push({"type": key, "gen": "I", "count": value})
@@ -633,13 +496,13 @@ d3.csv("pokemon.csv").then(
 
     generations = d3.map(dataSelectedHeatmap, d => d.gen)
     generations.forEach((d, j) => generations[j] = generations[j] + ", " + "fire")
-    selected_types = d3.map(dataSelectedHeatmap, d => d.type)
+    var selected_types = d3.map(dataSelectedHeatmap, d => d.type)
 
-    obj = {}
+    var obj = {}
     dataSelectedHeatmap.forEach(function(d){
       obj[d.type] = d.count
     })
-    stack_data_formating = [obj]
+    var stack_data_formating = [obj]
 
     var xScale = d3.scaleBand()
     .domain(generations)
@@ -653,52 +516,7 @@ d3.csv("pokemon.csv").then(
         
     var stackedData = d3.stack()
                         .keys(selected_types)
-                        (stack_data_formating)
-
-
-    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
-    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
-   
-    
-    var colorScale = d3.scaleOrdinal()
-    .domain(types)
-    .range(typeColors)
-
-    //make color legend
-    var size = 15
-    legend = svg.selectAll("myLegend")
-      .data(types)
-      .enter()
-      .append("g")
-    
-    legendBoxes = legend.append("rect")
-      .attr("x", dimensions.width/4 + 20)
-      .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5)}) 
-      .attr("width", size)
-      .attr("height", size)
-      .style("fill", function(d, i){ return typeColors[i]})
-      .style("opacity", function(d){
-        if (selected_types.includes(d)){
-          return 1
-        }else{
-          return 0.2
-        }
-      })
-        
-    legendText = legend.append("text")
-      .attr("x", dimensions.width/4 + 20 + size*1.2)
-      .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5) + (size/2)}) 
-      .style("fill", function(d, i){ return typeColors[i]})
-      .text(function(d){ return d })
-      .attr("text-anchor", "left")
-      .style("alignment-baseline", "middle")
-      .style("opacity", function(d){
-        if (selected_types.includes(d)){
-          return 1
-        }else{
-          return 0.2
-        }
-      })
+                        (stack_data_formating)   
 
     var bars = svg.append("g")
                   .selectAll("g")
@@ -743,29 +561,4 @@ d3.csv("pokemon.csv").then(
         .attr("transform", "rotate(-90)")
         .text("Count of Pokemon");
 
-    })
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
