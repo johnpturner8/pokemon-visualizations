@@ -17,14 +17,10 @@ d3.csv("pokemon.csv").then(
       margin:{
           top: 50,
           bottom: 50,
-          right: 250,
+          right: 50,
           left: 50
       }
     }
-
-    
-
-
         
     // create heatmap
     var data_heatmap = new Map(d3.rollup(dataset, v => v.length,d => d['primary_type'], d => d['gen']))
