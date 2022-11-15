@@ -24,9 +24,21 @@
       </em>  
       
      <div class="visualizations">
-      <div id="my_dataviz"></div>
+      <!-- <div id="my_dataviz"></div> -->
 
-      <svg id="barchart"></svg>
+      <div class="flex">
+        <!-- This is a lazy fix to align barchart and scatterplot. TODO: refactor this -->
+        <select name="dummy" id="dummy" class="rotated" style="visibility: hidden;">
+          <option value="1">Base Stat Total</option>
+          <option value="2">HP</option>
+          <option value="3">Attack</option>
+          <option value="4">Defense</option>
+          <option value="5">Special Attack</option>
+          <option value="6">Special Defense</option>
+          <option value="7">Speed</option>
+        </select>
+        <svg class="flex" id="barchart"></svg>
+      </div>
       <div class="flex">
         <select name="stat" id="stat" class="rotated">
           <option value="base_stat_total">Base Stat Total</option>

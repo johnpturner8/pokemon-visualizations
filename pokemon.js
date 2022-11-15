@@ -11,7 +11,7 @@ d3.csv("pokemon.csv").then(
 
 
     var dimensions = {
-      width: 1050,
+      width: 1200,
       height: 600,
       margin:{
           top: 50,
