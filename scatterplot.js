@@ -47,9 +47,9 @@ d3.csv("pokemon.csv").then(
       .data(types)
       .enter()
       .append("g")
+      .attr("class", "typeLegend")
     
     legendBoxes = legend.append("rect")
-    
       .attr("x", dimensions.width - dimensions.margin.right + 25)
       .attr("y", function(d,i){ return dimensions.margin.top + i*(size+5)}) 
       .attr("width", size)
@@ -300,7 +300,7 @@ d3.csv("pokemon.csv").then(
             Object.keys(typesVisible).forEach(key => {
               typesVisible[key] = true
             })
-            legend.style("opacity", 1)
+            d3.selectAll(".typeLegend").style("opacity", 1)
             update()
           })
     unselect.on("mouseover", function(d) { d3.select(this).style("cursor", "pointer") })
@@ -309,7 +309,7 @@ d3.csv("pokemon.csv").then(
             Object.keys(typesVisible).forEach(key => {
               typesVisible[key] = false
             })
-            legend.style("opacity", 0.2)
+            d3.selectAll(".typeLegend").style("opacity", 0.2)
             update()
           })
 
