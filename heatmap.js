@@ -151,8 +151,8 @@ d3.csv("pokemon.csv").then(
                         (stack_data_formating)
 
 
-    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"]
-    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD"]
+    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
+    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
    
     
     var colorScale = d3.scaleOrdinal()
@@ -281,7 +281,7 @@ d3.csv("pokemon.csv").then(
                   filteredData = dataset.filter(function(d){return (d.gen == i)})
                   filteredData.forEach(function(d){
                     if(d.secondary_type == ""){
-                      d.secondary_type = "normal"
+                      d.secondary_type = "none"
                     }
                   })
 
@@ -326,8 +326,8 @@ d3.csv("pokemon.csv").then(
                                       (stack_data_formating)
 
 
-                  var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"]
-                  var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD"]
+                  var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
+                  var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
                 
                   
                   var colorScale = d3.scaleOrdinal()
@@ -446,14 +446,14 @@ d3.csv("pokemon.csv").then(
                   filteredData = dataset.filter(function(d){return (d.gen == i)})
                   filteredData.forEach(function(d){
                     if(d.secondary_type == ""){
-                      d.secondary_type = "normal"
+                      d.secondary_type = "none"
                     }
                   })
 
                   filteredData = dataset.filter(function(d){return (d.primary_type == i)})
                   filteredData.forEach(function(d){
                     if(d.secondary_type == ""){
-                      d.secondary_type = "normal"
+                      d.secondary_type = "none"
                     }
                   })
 
@@ -498,8 +498,8 @@ d3.csv("pokemon.csv").then(
                                       (stack_data_formating)
 
 
-                  var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"]
-                  var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD"]
+                  var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
+                  var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
                 
                   
                   var colorScale = d3.scaleOrdinal()
@@ -616,7 +616,7 @@ d3.csv("pokemon.csv").then(
     filteredData = dataset.filter(function(d){return (d.primary_type == "fire" && d.gen == "I")})
     filteredData.forEach(function(d){
       if(d.secondary_type == ""){
-        d.secondary_type = "normal"
+        d.secondary_type = "none"
       }
     })
     var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
@@ -656,8 +656,8 @@ d3.csv("pokemon.csv").then(
                         (stack_data_formating)
 
 
-    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"]
-    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD"]
+    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
+    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
    
     
     var colorScale = d3.scaleOrdinal()
