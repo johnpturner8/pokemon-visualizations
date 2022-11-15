@@ -62,6 +62,7 @@ d3.csv("pokemon.csv").then(
     bars.append("rect")
       .on("mouseover", function(d,i){
         d3.select(this)
+        .style("cursor", "pointer")
         .attr("stroke", "black")
         text.attr("x",  xScale(i[0]) + xScale.bandwidth()/2)
         .attr("y",yScale(+i[1])- 10)

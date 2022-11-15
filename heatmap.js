@@ -80,6 +80,7 @@ d3.csv("pokemon.csv").then(
       d3.select(this)
       .attr("stroke", "black")
       .attr("stroke-width", 2)
+      .style("cursor", "pointer")
 
     })
     .on("mouseout", function(){
@@ -257,6 +258,7 @@ d3.csv("pokemon.csv").then(
                 .on("mouseover", function(d,i){
                   d3.select(this)
                   .style("font-size", "18px")
+                  .style("cursor", "pointer")
             
                 })
                 .on("mouseout", function(){
@@ -424,7 +426,7 @@ d3.csv("pokemon.csv").then(
                 .on("mouseover", function(d,i){
                   d3.select(this)
                   .style("font-size", "18px")
-            
+                  .style("cursor", "pointer")
                 })
                 .on("mouseout", function(){
                     if(d3.select(this).attr("class") != "selected"){
