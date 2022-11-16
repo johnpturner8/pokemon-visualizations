@@ -24,7 +24,7 @@ var update;
 
 export function scatterplot(dataset){
   var dimensions = {
-    width: 600,
+    width: 700,
     height: 400,
     margin:{
         top: 50,
@@ -33,6 +33,8 @@ export function scatterplot(dataset){
         left: 50
     }
   }
+
+  console.log(dimensions)
 
   var svg = d3.select("#scatterplot")
     .style("width", dimensions.width)
