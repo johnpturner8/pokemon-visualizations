@@ -106,7 +106,7 @@ d3.csv("pokemon.csv").then(
     filteredData = dataset.filter(function(d){return (d.primary_type == i.type && d.gen == i.gen)})
     filteredData.forEach(function(d){
       if(d.secondary_type == ""){
-        d.secondary_type = "normal"
+        d.secondary_type = "none"
       }
     })
     var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
