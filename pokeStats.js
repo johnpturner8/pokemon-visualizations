@@ -149,7 +149,7 @@ export function pokeStats(dataset){
         .append('tspan')
           .style('fill', color(current.primary_type))
           .text(current.primary_type)
-    if(current.secondary_type != ""){
+    if(current.secondary_type != "none"){
       types[n]
       .append('tspan')
         .text(' / ')
@@ -188,7 +188,7 @@ export function pokeStats(dataset){
         .append('tspan')
         .text(current.primary_type)
         .style('fill', color(current.primary_type))
-      if(current.secondary_type != ""){
+      if(current.secondary_type != "none"){
         types[num].append('tspan')
           .text(' / ')
           .style("fill", "black")
