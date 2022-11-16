@@ -1,5 +1,9 @@
 import { drawStats } from "./pokeStats.js";
 
+var maxSelected = 3; //should be same as num in pokeStats
+var sinceSelected = [0, 0, 0];
+var selected = [null, null, null] 
+
 //filters
 var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
 var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
@@ -105,19 +109,51 @@ export function scatterplot(dataset){
               .enter()
               .append("circle")
                 .attr("class", "dot")
+                .attr("id", d => {d.english_name})
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y)
                 .attr("fill", d => d.color)
               .on('mouseover', function(d, i){
                   d3.select(this).attr("stroke", "black")
                   .attr("stroke-width", "2px")
+                  .style("cursor", "pointer")
+
                   text1.text("Pokemon: " + i.english_name)
                   text2.text("Base Stat Total" + ": " + yAccessor(i))
-                  drawStats(i.english_name)
               })
               .on('mouseout', function(d, i){
+                if(!selected.includes(i.english_name)){
                   d3.select(this)
                   .attr("stroke-width", "0px")
+                }
+              })
+              .on('click', function(d, i){
+                if(!selected.includes(i.english_name)){
+                  var ind = selected.indexOf(null)
+                  if(ind == -1){
+                    var max = Math.max(...sinceSelected);
+                    ind = sinceSelected.indexOf(max)
+                    d3.select(`#${selected[ind]}`)
+                      .attr("stroke-width", "0px")
+                  }
+                  selected[ind] = i.english_name;
+                  for(var num = 0; num < maxSelected; num++){
+                    sinceSelected[num]++;
+                  }
+                  sinceSelected[ind] = 0;
+                  drawStats(i.english_name, ind)
+
+                  d3.select(this).attr("stroke", "black")
+                  .attr("stroke-width", "2px")
+                }
+                else{
+                  var ind = selected.indexOf(i.english_name);
+                  selected[ind] = null;
+                  drawStats(null, ind)
+                  
+                  d3.select(this)
+                    .attr("stroke-width", "0px")
+                }
               })
     
     n.transition().duration(500)
@@ -204,8 +240,6 @@ export function updateFilters(visibleGens = null, visibleTypes = null, finalEvol
       typesVisible[element] = visibleTypes.includes(element);
     });
   }
-  console.log(visibleGens)
-  console.log(visibleTypes)
   finalEvolutionOnly = finalEvolution;
   update()
 };
