@@ -5,6 +5,20 @@ export function heatmap(dataset){
     var previousColor = 0
     var previousXYElement = 0
     var previousFontSize = 0 
+    var selectedGenType = []
+    var gens = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
+    //var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
+    var types = ['grass', 'fire', 'water', 'bug', 'normal', 'poison', 'electric', 'ground', 'fairy', 'fighting', 'psychic', 'rock', 'ghost', 'ice', 'dragon', 'dark', 'steel', 'flying']
+    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
+
+
+//  initialize adjacency matrix which represent what type and gen is selected in the heatmap
+    for (let i = 0; i < gens.length; i++) {
+      selectedGenType[i] = new Array()
+      for (let j = 0; j < types.length; j++) {
+        selectedGenType[i][j] = "false"
+      }
+    }
 
     var dimensions = {
       width: 400,
@@ -22,30 +36,28 @@ export function heatmap(dataset){
     // create heatmap
     var data_heatmap = new Map(d3.rollup(dataset, v => v.length,d => d['primary_type'], d => d['gen']))
     var transformed_heatmap = []
-    
+    var keys = []
     //transforming the data in the right format
     for (let [key, value] of data_heatmap){
       for (let [k, v] of value){
         transformed_heatmap.push({"type": key, "gen": k, "count": v})
       }
+      keys.push(key)
     }
 
+    console.log(keys)
+    console.log(transformed_heatmap)
     var svg = d3.select("#heatmap")
                     .style("width", dimensions.width)
                     .style("height", dimensions.height)
                     
-    var generations = d3.map(transformed_heatmap, d => d.gen)
-    // types = d3.map(transformed_heatmap, d => d.type)
-    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
-    var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
-
     var xScale = d3.scaleBand()
-      .domain(generations)
+      .domain(gens)
       .range([dimensions.margin.left +50 ,dimensions.width - dimensions.margin.right])
   
 
     var yScale = d3.scaleBand()
-      .domain(types.slice(0, -1))
+      .domain(keys)
       .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
     var colorScale = d3.scaleOrdinal()
@@ -59,7 +71,7 @@ export function heatmap(dataset){
       }
     })
 
-
+    
     var myColor = d3.scaleLinear()
     .range(["white", "#008BF5"])
     .domain([0,max_value])
@@ -88,20 +100,26 @@ export function heatmap(dataset){
         createSelectAll(this, i, "All")
         d3.select(this)
         .attr("stroke", "none")
+
+        deselect([i.gen], [i.type])
       }else if (d3.select(this).attr("class") == "selected"){
         d3.select(this)
         .attr("stroke", "none")
         .attr("class", "unselected")
+
+        deselect([i.gen], [i.type])
       }else{
         previousColor = d3.select(this).style("fill")
         previousElement = this
 
         updateFilters([i.gen], [i.type]);
-        var filteredData = filterDataByGenAndType(i.gen, i.type)
+        select([i.gen], [i.type])
+        console.log(selectedGenType)
+
+        var filteredData = filterDataByGenAndType2()
+        console.log(filteredData)
 
         createSpecificHeatmap(this, filteredData, i)
-
-        createXAxisLabel(svg, "Selected generation & primary type",  (dimensions.width)/4, dimensions.height-dimensions.margin.bottom+ 40)
 
         createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
       }
@@ -150,17 +168,22 @@ export function heatmap(dataset){
                     createSelectAll(this, i, "All")
                     d3.select(this)
                     .style("font-size", "10px")
+                    deselect([i], types)
                   }else if (d3.select(this).attr("class") == "selected"){
                     d3.select(this)
                     .style("font-size", "10px")
                     .attr("class", "unselected")
+                    deselect([i], types)
                   }else
                   {
                     previousXYElement = this
           
                     updateFilters([i], types.slice(0, -1));
-              
-                    var filteredData = filterDataByGeneration(i)
+                    select([i], types)
+                    console.log(selectedGenType)
+            
+                    var filteredData = filterDataByGenAndType2()
+                    console.log(filteredData)
                     createHeatmap(this, filteredData, i, "Selected generation")
                   }
 
@@ -189,18 +212,23 @@ export function heatmap(dataset){
                     createSelectAll(this, i, "All")
                     d3.select(this)
                     .style("font-size", "10px")
+                    deselect(gens, [i])
                   }else if (d3.select(this).attr("class") == "selected"){
                     d3.select(this)
                     .style("font-size", "10px")
                     .attr("class", "unselected")
+                    deselect(gens, [i])
                   }else{
 
                     previousXYElement = this
 
                     updateFilters(["I", "II", "III", "IV", "V", "VI", "VII", "VIII"], [i]);
               
-                    var filteredData = filterDataByGeneration(i)
-                    filteredData = filterDataByPrimaryType(i)
+                    select(gens, [i])
+                    console.log(selectedGenType)
+            
+                    var filteredData = filterDataByGenAndType2()
+                    console.log(filteredData)
 
                     createHeatmap(this, filteredData, i, "Selected primary type")
                   }
@@ -216,23 +244,18 @@ export function heatmap(dataset){
 
 
     // selected heatmap
-    var filteredData = filterDataByGenAndType("I", "fire")
-    var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
+    var groupedData = new Map(d3.rollup(dataset, v => v.length,d => d['secondary_type']))
     var dataSelectedHeatmap = []
     //transforming the data in the right format
     for (let [key, value] of groupedData){
-      dataSelectedHeatmap.push({"type": key, "gen": "I", "count": value})
+      dataSelectedHeatmap.push({"type": key, "count": value})
     }
 
 
     var svg = d3.select("#selected_heatmap")
                     .style("width", dimensions.width)
                     .style("height", dimensions.height)
-
-    generations = d3.map(dataSelectedHeatmap, d => d.gen)
-    generations.forEach((d, j) => generations[j] = generations[j] + ", " + "fire")
-    var selected_types = d3.map(dataSelectedHeatmap, d => d.type)
-
+    
     var obj = {}
     dataSelectedHeatmap.forEach(function(d){
       obj[d.type] = d.count
@@ -240,17 +263,17 @@ export function heatmap(dataset){
     var stack_data_formating = [obj]
 
     var xScale = d3.scaleBand()
-    .domain(generations)
+    .domain(["selected fields"])
     .range([dimensions.margin.left ,dimensions.width/4])
 
     var yScale = d3.scaleLinear()
-    .domain([0, 12])
+    .domain([0, 28])
     .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
 
         
     var stackedData = d3.stack()
-                        .keys(selected_types)
+                        .keys(types)
                         (stack_data_formating)   
 
     var bars = svg.append("g")
@@ -279,11 +302,6 @@ export function heatmap(dataset){
     var yAxis = svg.append("g")
                     .call(yAxisGen)
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
-
-
-
-    createXAxisLabel(svg, "Selected generation & primary type", (dimensions.width)/4, dimensions.height-dimensions.margin.bottom +40)
-
 
     createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
 
@@ -318,7 +336,7 @@ export function heatmap(dataset){
       var stack_data_formating = [obj]
 
       var xScale = d3.scaleBand()
-      .domain(generations)
+      .domain(["selected fields"])
       .range([dimensions.margin.left ,dimensions.width/4])
 
       var yScale = d3.scaleLinear()
@@ -356,9 +374,7 @@ export function heatmap(dataset){
                       .call(yAxisGen)
                       .style("transform", `translateX(${dimensions.margin.left}px)`)
 
-      
-      createXAxisLabel(svg, xLabel, (dimensions.width)/4 , dimensions.height-dimensions.margin.bottom +40)
-      createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
+            createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
   
     }
 
@@ -393,7 +409,7 @@ export function heatmap(dataset){
           var stack_data_formating = [obj]
 
           var xScale = d3.scaleBand()
-          .domain(generations)
+          .domain(["selected fields"])
           .range([dimensions.margin.left ,dimensions.width/4])
 
           var yScale = d3.scaleLinear()
@@ -430,8 +446,6 @@ export function heatmap(dataset){
                           .call(yAxisGen)
                           .style("transform", `translateX(${dimensions.margin.left}px)`)
 
-          
-          createXAxisLabel(svg, xLabel, (dimensions.width)/4 , dimensions.height-dimensions.margin.bottom +40)
           createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
       
         }
@@ -466,7 +480,7 @@ export function heatmap(dataset){
           var stack_data_formating = [obj]
 
           var xScale = d3.scaleBand()
-          .domain(generations)
+          .domain(["selected fields"])
           .range([dimensions.margin.left ,dimensions.width/4])
 
           var yScale = d3.scaleLinear()
@@ -505,8 +519,22 @@ export function heatmap(dataset){
                           .style("transform", `translateX(${dimensions.margin.left}px)`)
         }
 
-        function filterDataByGeneration(i){
-          var filtered = dataset.filter(function(d){return (d.gen == i)})
+
+
+        function filterDataByGenAndType2(){
+          var filtered = []
+          for (let i = 0; i < gens.length; i++) {
+            for (let j = 0; j < types.length; j++) {
+              if(selectedGenType[i][j] == "true"){
+                dataset.filter(function(d){
+                  if ((d.primary_type == types[i] && d.gen == gens[i])){
+                    filtered.push(d)
+                  }
+                })
+              }   
+            }
+          } 
+
           filtered.forEach(function(d){
             if(d.secondary_type == ""){
               d.secondary_type = "none"
@@ -515,15 +543,48 @@ export function heatmap(dataset){
           return filtered
         }
 
-        function filterDataByPrimaryType(i){
-          var filtered = dataset.filter(function(d){return (d.primary_type == i)})
-          filtered.forEach(function(d){
-            if(d.secondary_type == ""){
-              d.secondary_type = "none"
-            }
+
+        function deselect(gen, type){
+          var gen_idx = []
+          var type_idx = []
+          gen.forEach(function(d){
+            var i = gens.indexOf(d)
+            gen_idx.push(i)
           })
-          return filtered
+
+          type.forEach(function(d){
+            var i = types.indexOf(d)
+            type_idx.push(i)
+          })
+
+          for (let i = 0; i < gen_idx.length; i++) {
+            for (let j = 0; j < type_idx.length; j++) {
+              selectedGenType[gen_idx[i]][type_idx[j]] = "false"
+            }
+          }
         }
+
+
+        function select(gen, type){
+          var gen_idx = []
+          var type_idx = []
+          gen.forEach(function(d){
+            var i = gens.indexOf(d)
+            gen_idx.push(i)
+          })
+
+          type.forEach(function(d){
+            var i = types.indexOf(d)
+            type_idx.push(i)
+          })
+
+          for (let i = 0; i < gen_idx.length; i++) {
+            for (let j = 0; j < type_idx.length; j++) {
+              selectedGenType[gen_idx[i]][type_idx[j]] = "true"
+            }
+          }
+        }
+
 
         function filterDataByGenAndType(gen, type){
           var filtered = dataset.filter(function(d){return (d.primary_type == type && d.gen == gen)})
@@ -535,14 +596,6 @@ export function heatmap(dataset){
           return filtered
         }
 
-        function checkSelection(){
-          if(previousElement != 0){
-            d3.select(previousElement).attr("stroke", "none").attr("class", "unselected")
-          }
-          if(previousXYElement != 0){
-            d3.select(previousXYElement).attr("class", "unselected").style("font-size", "10px")
-          }
-        }
                   
         function createXAxisLabel(svg, labelText, x, y){
           svg.append("text")
