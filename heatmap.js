@@ -305,9 +305,22 @@ export function heatmap(dataset){
           var groupedData = new Map(d3.rollup(filteredData, v => v.length,d => d['secondary_type']))
           var dataSelectedHeatmap = []
           //transforming the data in the right format
-          for (let [key, value] of groupedData){
-            dataSelectedHeatmap.push({"type": key, "count": value})
+          console.log(groupedData)
+
+          var value = groupedData.get('none')
+          if(value > 0)
+              dataSelectedHeatmap.push({"type": "none", "count": value})
+          for(var i = 0; i < types.length - 1; i++){
+            var key = types[i]
+            var value = groupedData.get(key)
+            // console.log(groupedData.get(key)
+            if(value > 0)
+              dataSelectedHeatmap.push({"type": key, "count": value})
           }
+          // for (let [key, value] of groupedData){
+          //   dataSelectedHeatmap.push({"type": key, "count": value})
+          // }
+          console.log(dataSelectedHeatmap)
 
 
           var svg = d3.select("#selected_heatmap")
