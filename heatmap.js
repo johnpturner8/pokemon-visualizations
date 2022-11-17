@@ -115,6 +115,7 @@ export function heatmap(dataset){
         createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
       }
       updateFilters(selectedGenType);
+      updateSelections();
     })
 
      squares
@@ -166,17 +167,16 @@ export function heatmap(dataset){
                     .style("font-size", "10px")
                     .attr("class", "unselected")
                     deselect([i], types)
-                  }else
-                  {
+                  }else{
                     previousXYElement = this
           
                     select([i], types)
-            
 
                     var filteredData = filterDataByGenAndType2()
                     createHeatmap(this, filteredData, i, "Selected generation")
                   }
                   updateFilters(selectedGenType);
+                  updateSelections();
               })
 
     var yAxisGen = d3.axisLeft().scale(yScale)
@@ -219,6 +219,7 @@ export function heatmap(dataset){
                     createHeatmap(this, filteredData, i, "Selected primary type")
                   }
                   updateFilters(selectedGenType);
+                  updateSelections();
                 })
 
     yAxis.select(".tick text")
@@ -580,6 +581,10 @@ export function heatmap(dataset){
           return filtered
         }
 
+        function updateSelections(){
+          squares.attr("stroke", "black").attr("stroke-width", function(d){return selectedGenType[gens.indexOf(d.gen)][types.indexOf(d.type)] ? 1 : 0}) //console.log(selectedGenType[gens.indexOf(d.gen)][types.indexOf(d.type)]); return selectedGenType[gens.indexOf(d.gen)][types.indexOf(d.type)] ? 1 : 1
+                .attr("class", function(d){return selectedGenType[gens.indexOf(d.gen)][types.indexOf(d.type)] ? "selected" : "unselected"})
+        }
                   
         function createXAxisLabel(svg, labelText, x, y){
           svg.append("text")
