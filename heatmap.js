@@ -7,16 +7,14 @@ export function heatmap(dataset){
     var previousFontSize = 0 
     var selectedGenType = []
     var gens = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
-    //var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
-    var types = ['grass', 'fire', 'water', 'bug', 'normal', 'poison', 'electric', 'ground', 'fairy', 'fighting', 'psychic', 'rock', 'ghost', 'ice', 'dragon', 'dark', 'steel', 'flying']
+    var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
     var typeColors = ["#A8A77A", "#EE8130", "#6390F0", "#F7D02C", "#7AC74C", "#96D9D6", "#C22E28", "#A33EA1", "#E2BF65", "#A98FF3", "#F95587", "#A6B91A", "#B6A136", "#735797", "#6F35FC", "#705746", "#B7B7CE", "#D685AD", "#555151"]
-
 
 //  initialize adjacency matrix which represent what type and gen is selected in the heatmap
     for (let i = 0; i < gens.length; i++) {
       selectedGenType[i] = new Array()
       for (let j = 0; j < types.length; j++) {
-        selectedGenType[i][j] = "false"
+        selectedGenType[i][j] = "true"
       }
     }
 
@@ -36,16 +34,13 @@ export function heatmap(dataset){
     // create heatmap
     var data_heatmap = new Map(d3.rollup(dataset, v => v.length,d => d['primary_type'], d => d['gen']))
     var transformed_heatmap = []
-    var keys = []
     //transforming the data in the right format
     for (let [key, value] of data_heatmap){
       for (let [k, v] of value){
         transformed_heatmap.push({"type": key, "gen": k, "count": v})
       }
-      keys.push(key)
     }
 
-    console.log(keys)
     console.log(transformed_heatmap)
     var svg = d3.select("#heatmap")
                     .style("width", dimensions.width)
@@ -57,7 +52,7 @@ export function heatmap(dataset){
   
 
     var yScale = d3.scaleBand()
-      .domain(keys)
+      .domain(types)
       .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
     var colorScale = d3.scaleOrdinal()
