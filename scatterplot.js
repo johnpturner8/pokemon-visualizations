@@ -18,6 +18,11 @@ gens.forEach((element, index) => {
   gensVisible[element] = true;
 });
 
+var genTypesVisible = new Array(gens.length)
+for(var i = 0; i < gens.length; i++){
+  genTypesVisible[i] = new Array(types.length).fill(true)
+}
+
 var finalEvolutionOnly = false;
 
 var update;
@@ -60,7 +65,7 @@ export function scatterplot(dataset){
 
   //handle filters
   function nodeFilter(d){
-    return typesVisible[d.primary_type] && gensVisible[d.gen] && (!finalEvolutionOnly || d.is_final_evo == "TRUE")
+    return genTypesVisible[gens.indexOf(d.gen)][types.indexOf(d.primary_type)] && (!finalEvolutionOnly || d.is_final_evo == "TRUE")
   }
 
   var text1 = svg
@@ -221,26 +226,26 @@ export function scatterplot(dataset){
     update()
   })
 
-function tick(e) {
-  svg.selectAll(".dot").attr("cx", function(d) { return d.x; })
+  function tick(e) {
+    svg.selectAll(".dot").attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; });
-}
+  }
 }
 
 //process heatmap selections
 // visibleGens: object with gens and true/false
 // visibleTypes: object with types and true/false
 // finalEvolution: boolean, true is showing final evolutions only
-export function updateFilters(visibleGens = null, visibleTypes = null, finalEvolution = finalEvolutionOnly){
-  if(visibleGens){
-    gens.forEach((element, index) => {
-      gensVisible[element] = visibleGens.includes(element);
-    });
+export function updateFilters(visibleGenTypes = genTypesVisible, finalEvolution = finalEvolutionOnly){
+  if(visibleGenTypes.every(i => i.every(j => j === false))){
+    for(var i = 0; i < gens.length; i++){
+      genTypesVisible[i] = new Array(types.length).fill(true)
+    }
   }
-  if(visibleTypes){
-    types.forEach((element, index) => {
-      typesVisible[element] = visibleTypes.includes(element);
-    });
+  else{
+    for(var i = 0; i < genTypesVisible.length; i++)
+      for(var j = 0; j < genTypesVisible[i].length; j++)
+        genTypesVisible[i][j] = visibleGenTypes[i][j]
   }
   finalEvolutionOnly = finalEvolution;
   update()
