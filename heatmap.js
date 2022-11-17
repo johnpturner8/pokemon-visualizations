@@ -102,7 +102,7 @@ export function heatmap(dataset){
 
         createXAxisLabel(svg, "Selected generation & primary type",  (dimensions.width)/4, dimensions.height-dimensions.margin.bottom+ 40)
 
-        createYAxisLabel(svg, "Count of Pokemon", -200, 0)
+        createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
       }
     })
 
@@ -123,6 +123,7 @@ export function heatmap(dataset){
     .attr("x", d => (xScale(d.gen)+xScale.bandwidth()/2))
     .attr("y", d => yScale(d.type)+ yScale.bandwidth()/2)
     .style("style", "label")
+    .style("text-anchor", "middle")
     .text(d => d.count);
 
     var xAxisGen = d3.axisBottom(xScale)
@@ -281,7 +282,7 @@ export function heatmap(dataset){
     createXAxisLabel(svg, "Selected generation & primary type", (dimensions.width)/4, dimensions.height-dimensions.margin.bottom +40)
 
 
-    createYAxisLabel(svg, "Count of Pokemon", -200, 0)
+    createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
 
 
     function createSelectAll(ele, i, xLabel){
@@ -352,7 +353,7 @@ export function heatmap(dataset){
                       .style("transform", `translateX(${dimensions.margin.left}px)`)
       
       createXAxisLabel(svg, xLabel, (dimensions.width)/4 , dimensions.height-dimensions.margin.bottom +40)
-      createYAxisLabel(svg, "COunt of Pokemon", -200, 0)
+      createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
   
     }
 
@@ -425,7 +426,7 @@ export function heatmap(dataset){
                           .style("transform", `translateX(${dimensions.margin.left}px)`)
           
           createXAxisLabel(svg, xLabel, (dimensions.width)/4 , dimensions.height-dimensions.margin.bottom +40)
-          createYAxisLabel(svg, "COunt of Pokemon", -200, 0)
+          createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
       
         }
 
@@ -543,6 +544,7 @@ export function heatmap(dataset){
           .attr("text-anchor", "end")
           .attr("x", x)
           .attr("y",y)
+          .style("text-anchor", "middle")
           .text(labelText);
         }
 
@@ -554,6 +556,7 @@ export function heatmap(dataset){
               .attr("y", y)
               .attr("dy", ".75em")
               .attr("transform", "rotate(-90)")
+              .style("text-anchor", "middle")
               .text(labelText);
         }
     }
