@@ -273,10 +273,12 @@ export function heatmap(dataset){
                 .call(xAxisGen)
                 .style("transform", `translateY(${dimensions.height-dimensions.margin.bottom}px)`)
 
-    var yAxisGen = d3.axisLeft().scale(yScale)
+    const yAxisTicks = yScale.ticks().filter(tick => Number.isInteger(tick));
+    var yAxisGen = d3.axisLeft().scale(yScale).tickValues(yAxisTicks).tickFormat(d3.format("d"));
     var yAxis = svg.append("g")
                     .call(yAxisGen)
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
+
 
 
     createXAxisLabel(svg, "Selected generation & primary type", (dimensions.width)/4, dimensions.height-dimensions.margin.bottom +40)
@@ -347,10 +349,12 @@ export function heatmap(dataset){
                   .call(xAxisGen)
                   .style("transform", `translateY(${dimensions.height-dimensions.margin.bottom}px)`)
 
-      var yAxisGen = d3.axisLeft().scale(yScale)
+      const yAxisTicks = yScale.ticks().filter(tick => Number.isInteger(tick));
+      var yAxisGen = d3.axisLeft().scale(yScale).tickValues(yAxisTicks).tickFormat(d3.format("d"));
       var yAxis = svg.append("g")
                       .call(yAxisGen)
                       .style("transform", `translateX(${dimensions.margin.left}px)`)
+
       
       createXAxisLabel(svg, xLabel, (dimensions.width)/4 , dimensions.height-dimensions.margin.bottom +40)
       createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
@@ -419,11 +423,12 @@ export function heatmap(dataset){
           var xAxis = svg.append("g")
                       .call(xAxisGen)
                       .style("transform", `translateY(${dimensions.height-dimensions.margin.bottom}px)`)
-
-          var yAxisGen = d3.axisLeft().scale(yScale)
+          const yAxisTicks = yScale.ticks().filter(tick => Number.isInteger(tick));
+          var yAxisGen = d3.axisLeft().scale(yScale).tickValues(yAxisTicks).tickFormat(d3.format("d"));
           var yAxis = svg.append("g")
                           .call(yAxisGen)
                           .style("transform", `translateX(${dimensions.margin.left}px)`)
+
           
           createXAxisLabel(svg, xLabel, (dimensions.width)/4 , dimensions.height-dimensions.margin.bottom +40)
           createYAxisLabel(svg, "Count of secondary types from the selected primary types in the heatmap", -200, 0)
@@ -492,11 +497,11 @@ export function heatmap(dataset){
                       .call(xAxisGen)
                       .style("transform", `translateY(${dimensions.height-dimensions.margin.bottom}px)`)
 
-          var yAxisGen = d3.axisLeft().scale(yScale)
+          const yAxisTicks = yScale.ticks().filter(tick => Number.isInteger(tick));
+          var yAxisGen = d3.axisLeft().scale(yScale).tickValues(yAxisTicks).tickFormat(d3.format("d"));
           var yAxis = svg.append("g")
                           .call(yAxisGen)
                           .style("transform", `translateX(${dimensions.margin.left}px)`)
-
         }
 
         function filterDataByGeneration(i){
