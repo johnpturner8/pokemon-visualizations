@@ -8,63 +8,40 @@
 
   </head>
   <body>
-    <header>
+    <!-- <header>
       <div class="header-text">
         <h1>Pokemon interactive visualization - Do Pokemon get stronger over the generations?</h1>
       </div>
-    </header>
+    </header> -->
     <main>
-      <h2>Overview</h2>
-      <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quasi ea quo odio rem veritatis. Aspernatur ratione quia inventore asperiores incidunt id sint eum ducimus, voluptates ipsa, accusantium porro sapiente?</p> -->
-      <!-- <h2>Development of stat values over the generations</h2> -->
-      <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est iste ipsam sint delectus facilis error obcaecati repellendus voluptate deleniti doloremque dignissimos aperiam non, explicabo vero magni sunt provident culpa autem!</p> -->
-      <em>
-        <strong>Sample question:</strong>
-        How did the base stat total develop? 
-      </em>  
-      
      <div class="visualizations">
-      <!-- <div id="my_dataviz"></div> -->
-
-      <!-- This is a lazy fix to align barchart and scatterplot. TODO: refactor this -->
-      <!-- <div class="flex">
-        <select name="dummy" id="dummy" class="rotated" style="visibility: hidden;">
-          <option value="1">Base Stat Total</option>
-          <option value="2">HP</option>
-          <option value="3">Attack</option>
-          <option value="4">Defense</option>
-          <option value="5">Special Attack</option>
-          <option value="6">Special Defense</option>
-          <option value="7">Speed</option>
-        </select>
-        <svg class="flex" id="barchart"></svg>
-      </div> -->
       <div class="flex">
-        <select name="stat" id="stat" class="rotated">
-          <option value="base_stat_total">Base Stat Total</option>
-          <option value="hp">HP</option>
-          <option value="attack">Attack</option>
-          <option value="defense">Defense</option>
-          <option value="sp_attack">Special Attack</option>
-          <option value="sp_defense">Special Defense</option>
-          <option value="speed">Speed</option>
-        </select>
-        <svg class="flex" id="scatterplot"></svg>
-        <div id="graph" class="flex">
+        <div class = "flex">
+          <select name="stat" id="stat" class="rotated">
+            <option value="base_stat_total">Base Stat Total</option>
+            <option value="hp">HP</option>
+            <option value="attack">Attack</option>
+            <option value="defense">Defense</option>
+            <option value="sp_attack">Special Attack</option>
+            <option value="sp_defense">Special Defense</option>
+            <option value="speed">Speed</option>
+          </select>
+          <svg id="scatterplot"></svg>
+        </div>
+        <div id="graph">
           <svg id="heatmap"></svg>
           <div class="tooltip"></div>
         </div>
-        <svg id="selected_heatmap" class="flex"></svg>
+        <svg id="selected_heatmap"></svg>
       </div>
-      <!-- <div class = "flex">
-        
-      </div> -->
+      <svg id="stats"></svg>
      </div> 
     </main>
 
     <script type="module" src="pokemon.js"></script>
     <script type="module" src="scatterplot.js"></script>
     <script type="module" src="heatmap.js"></script>
+    <script type="module" src="pokestats.js"></script>
   </body>
 </html>
 

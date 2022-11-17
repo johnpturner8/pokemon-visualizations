@@ -8,7 +8,7 @@ export function heatmap(dataset){
 
     var dimensions = {
       width: 400,
-      height: 600,
+      height: 400,
       margin:{
           top: 50,
           bottom: 50,
@@ -16,6 +16,8 @@ export function heatmap(dataset){
           left: 50
       }
     }
+
+    console.log(dimensions)
         
     // create heatmap
     var data_heatmap = new Map(d3.rollup(dataset, v => v.length,d => d['primary_type'], d => d['gen']))
@@ -91,7 +93,6 @@ export function heatmap(dataset){
         .attr("stroke", "none")
         .attr("class", "unselected")
       }else{
-
         previousColor = d3.select(this).style("fill")
         previousElement = this
 

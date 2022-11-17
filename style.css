@@ -34,23 +34,14 @@ main {
 }
 
 
-/* #scatterplot{ */
-    /* width: 1050px; */
-    /* height: 600px;  */
-    /* background-color: lightblue; */
-/* } */
+#scatterplot{ 
+    width: 1000px;
+    height: 400px; 
+}
 
-/* #boxplot{
-    width: 600px;
+#boxplot{
+    width: 400px;
     height: 400px;
-    background-color: lightgreen;
-} */
-
-.filter{
-    width: 200px;
-    height: 500px;
-    background-color: lightblue;
-
 }
 
 .rotated {
