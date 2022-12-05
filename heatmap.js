@@ -93,6 +93,7 @@ export function heatmap(dataset){
           d3.select(this)
           .attr("stroke", "none")
         }
+
     })
     .on('click', function(d,i){
       var len = d3.selectAll(".selected")._groups[0].length
@@ -276,6 +277,16 @@ export function heatmap(dataset){
     var stackedData = d3.stack()
                         .keys(types)
                         (stack_data_formating)   
+    // create a tooltip
+    var Tooltip = d3.select("#graph")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
 
     var bars = svg.append("g")
                   .selectAll("g")
@@ -283,6 +294,21 @@ export function heatmap(dataset){
                   .enter()
                   .append("g")
                   .attr("fill", d => colorScale(d.key))
+                  .on('mouseover', function(d, i){
+                    Tooltip
+                    .style("opacity", 1)
+                  })
+                  .on('mouseout', function(d, i){
+                    Tooltip
+                    .style("opacity", 0)
+                  })
+                  .on('mousemove', function(d, i) {
+                    Tooltip
+                      .html("Type " + i.key)
+                      .style("position", "relative")
+                      .style("left", (d3.pointer(d)[0]+100) + "px")
+                      .style("top", (d3.pointer(d)[1]-350) + "px")
+                  })
                   .selectAll("rect")
                   .data(function(d){return d;})
                   .enter()
@@ -349,6 +375,16 @@ export function heatmap(dataset){
           var stackedData = d3.stack()
                               .keys(selected_types)
                               (stack_data_formating)
+    // create a tooltip
+    var Tooltip = d3.select("#graph")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
 
           var bars = svg.append("g")
                         .selectAll("g")
@@ -356,6 +392,24 @@ export function heatmap(dataset){
                         .enter()
                         .append("g")
                         .attr("fill", d => colorScale(d.key))
+                        .on('mouseover', function(d, i){
+                          Tooltip
+                          .style("opacity", 1)
+                      })
+                      .on('mouseout', function(d, i){
+                        Tooltip
+                        .style("opacity", 0)
+                      })
+                      .on('mousemove', function(d, i) {
+                        console.log(i)
+                        console.log(d.screenX)
+                        console.log(d3.pointer(d  ))
+                        Tooltip
+                          .html("Type " + i.key)
+                          .style("position", "relative")
+                          .style("left", (d3.pointer(d)[0]+100) + "px")
+                          .style("top", (d3.pointer(d)[1]-350) + "px")
+                        })
                         .selectAll("rect")
                         .data(function(d){return d;})
                         .enter()
@@ -364,6 +418,7 @@ export function heatmap(dataset){
                         .attr("y", d => yScale(d[1]))
                         .attr("height", d => yScale(d[0]) - yScale(d[1]))
                         .attr("width", d => xScale.bandwidth()/2)
+
 
 
           // var xAxisGen = d3.axisBottom(xScale)

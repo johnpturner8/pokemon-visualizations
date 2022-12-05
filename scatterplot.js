@@ -68,6 +68,18 @@ export function scatterplot(dataset){
     return genTypesVisible[gens.indexOf(d.gen)][types.indexOf(d.primary_type)] && (!finalEvolutionOnly || d.is_final_evo == "TRUE")
   }
 
+    // create a tooltip
+    var Tooltip = d3.select("#scatter")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+
+
   var text1 = svg
               .append('text')
               .attr("id", 'topbartext')
@@ -124,7 +136,8 @@ export function scatterplot(dataset){
                   d3.select(this).attr("stroke", "black")
                   .attr("stroke-width", "2px")
                   .style("cursor", "pointer")
-
+                  Tooltip
+                  .style("opacity", 1)
                   text1.text("Pokemon: " + i.english_name)
                   text2.text("Base Stat Total" + ": " + yAccessor(i))
               })
@@ -133,7 +146,16 @@ export function scatterplot(dataset){
                   d3.select(this)
                   .attr("stroke-width", "0px")
                 }
+                Tooltip
+                .style("opacity", 0)
               })
+              .on('mousemove', function(d, i) {
+                Tooltip
+                  .html("Pokemon: " + i.english_name  + "Stat value: " + yAccessor(i))
+                  .style("position", "relative")
+                  .style("left", (d3.pointer(d)[0]-700) + "px")
+                  .style("top", (d3.pointer(d)[1]-100) + "px")
+                })
               .on('click', function(d, i){
                 if(!selected.includes(i.english_name)){
                   var ind = selected.indexOf(null)
