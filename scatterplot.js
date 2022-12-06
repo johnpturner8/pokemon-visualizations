@@ -68,40 +68,21 @@ export function scatterplot(dataset){
     return genTypesVisible[gens.indexOf(d.gen)][types.indexOf(d.primary_type)] && (!finalEvolutionOnly || d.is_final_evo == "TRUE")
   }
 
-    // create a tooltip
-    var Tooltip = d3.select("#scatter")
-    .append("div")
-    .style("opacity", 0)
-    .attr("class", "tooltip")
-    .style("background-color", "white")
-    .style("border", "solid")
-    .style("border-width", "2px")
-    .style("border-radius", "5px")
-    .style("padding", "5px")
-
-
-  var text1 = svg
-              .append('text')
-              .attr("id", 'topbartext')
-              .attr("x", dimensions.width - dimensions.margin.right - 200)
-              .attr("y", dimensions.margin.top - 30)
-              .attr("dx", "-.8em")
-              .attr("dy", "0em")
-              .attr("font-family", "sans-serif")
-              .text("Pokemon: ")
-
-  var text2 = svg
-              .append('text')
-              .attr("id", 'topbartext')
-              .attr("x", dimensions.width - dimensions.margin.right - 200)
-              .attr("y", dimensions.margin.top - 30)
-              .attr("dx", "-.8em")
-              .attr("dy", "1.2em")
-              .attr("font-family", "sans-serif")
-              .text("Base Stat Total: ")
-
   var x = d => xScale(xAccessor(d))+xScale.bandwidth()/2
   var y = d => yScale(yAccessor(d))
+
+  // create a tooltip
+  var Tooltip = d3.select("#scatterdiv")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "2px")
+  .style("border-radius", "5px")
+  .style("padding", "5px")
+  .style("width", "200px")
+  .html("Pokemon: Placeholder <br> Stat placeholder ")
 
   dataset.forEach(
     function(d) {
@@ -138,8 +119,6 @@ export function scatterplot(dataset){
                   .style("cursor", "pointer")
                   Tooltip
                   .style("opacity", 1)
-                  text1.text("Pokemon: " + i.english_name)
-                  text2.text("Base Stat Total" + ": " + yAccessor(i))
               })
               .on('mouseout', function(d, i){
                 if(!selected.includes(i.english_name)){
@@ -148,13 +127,16 @@ export function scatterplot(dataset){
                 }
                 Tooltip
                 .style("opacity", 0)
+                //move to original position
+                .style("left", 0 + "px")
+                .style("top", 0 + "px")
               })
               .on('mousemove', function(d, i) {
                 Tooltip
-                  .html("Pokemon: " + i.english_name  + "Stat value: " + yAccessor(i))
+                  .html("Pokemon: " + i.english_name  + "<br>" + d3.select('#stat option:checked').text() + ": " + yAccessor(i))
                   .style("position", "relative")
-                  .style("left", (d3.pointer(d)[0]-700) + "px")
-                  .style("top", (d3.pointer(d)[1]-100) + "px")
+                  .style("left", (d3.pointer(d)[0] + 20) + "px")
+                  .style("top", (d3.pointer(d)[1] - dimensions.height) + "px")
                 })
               .on('click', function(d, i){
                 if(!selected.includes(i.english_name)){

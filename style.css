@@ -72,3 +72,11 @@ select {
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
 }
+
+.dummyTooltip {
+    opacity: 0;
+    border-width: "2px";
+    border-radius: "5px";
+    padding: "5px";
+    border: solid;
+}

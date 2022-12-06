@@ -8,30 +8,33 @@
 
   </head>
   <body>
-    <!-- <header>
-      <div class="header-text">
-        <h1>Pokemon interactive visualization - Do Pokemon get stronger over the generations?</h1>
-      </div>
-    </header> -->
     <main>
      <div class="visualizations">
       <div class="flex">
         <div class = "flex" id="scatter">
-          <select name="stat" id="stat" class="rotated">
-            <option value="base_stat_total">Base Stat Total</option>
-            <option value="hp">HP</option>
-            <option value="attack">Attack</option>
-            <option value="defense">Defense</option>
-            <option value="sp_attack">Special Attack</option>
-            <option value="sp_defense">Special Defense</option>
-            <option value="speed">Speed</option>
-          </select>
-          <svg id="scatterplot"></svg>
+          <div>
+            <select name="stat" id="stat" class="rotated">
+              <option value="base_stat_total">Base Stat Total</option>
+              <option value="hp">HP</option>
+              <option value="attack">Attack</option>
+              <option value="defense">Defense</option>
+              <option value="sp_attack">Special Attack</option>
+              <option value="sp_defense">Special Defense</option>
+              <option value="speed">Speed</option>
+            </select>
+            <div class = "dummyTooltip">.<br>.</div>
+          </div>
+          <div id = "scatterdiv">
+            <svg id="scatterplot"></svg>
+          </div>
         </div>
         <div id="graph">
           <svg id="heatmap"></svg>
         </div>
-        <svg id="selected_heatmap"></svg>
+        <div id="stacked_bar">
+          <svg id="selected_heatmap"></svg>
+        </div>
+      </div>
       </div>
       <svg id="stats"></svg>
      </div> 

@@ -235,25 +235,9 @@ export function heatmap(dataset){
 
     createYAxisLabel(svg, "Primary type", -200, 0)
 
-
-    // selected heatmap
-    var groupedData = new Map(d3.rollup(dataset, v => v.length,d => d['secondary_type']))
-    var dataSelectedHeatmap = []
-    //transforming the data in the right format
-    for (let [key, value] of groupedData){
-      dataSelectedHeatmap.push({"type": key, "count": value})
-    }
-
-
     var svg = d3.select("#selected_heatmap")
                     .style("width", dimensions.width)
                     .style("height", dimensions.height)
-    
-    var obj = {}
-    dataSelectedHeatmap.forEach(function(d){
-      obj[d.type] = d.count
-    })
-    var stack_data_formating = [obj]
 
     var xScale = d3.scaleBand()
     .domain(["selected fields"])
@@ -263,22 +247,14 @@ export function heatmap(dataset){
     .domain([0, dataset.length])
     .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
-    // var xAxisGen = d3.axisBottom(xScale)
-    // var xAxis = svg.append("g")
-    //             .call(xAxisGen)
-    //             .style("transform", `translateY(${dimensions.height-dimensions.margin.bottom}px)`)
-
     const yAxisTicks = yScale.ticks().filter(tick => Number.isInteger(tick));
     var yAxisGen = d3.axisLeft().scale(yScale).tickValues(yAxisTicks).tickFormat(d3.format("d"));
     var yAxis = svg.append("g")
                     .call(yAxisGen)
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
         
-    var stackedData = d3.stack()
-                        .keys(types)
-                        (stack_data_formating)   
-    // create a tooltip
-    var Tooltip = d3.select("#graph")
+    //Dummy tooltip
+    d3.select("#graph")
     .append("div")
     .style("opacity", 0)
     .attr("class", "tooltip")
@@ -287,36 +263,21 @@ export function heatmap(dataset){
     .style("border-width", "2px")
     .style("border-radius", "5px")
     .style("padding", "5px")
+    .html("Type: <br> Count: ")
 
-    var bars = svg.append("g")
-                  .selectAll("g")
-                  .data(stackedData)
-                  .enter()
-                  .append("g")
-                  .attr("fill", d => colorScale(d.key))
-                  .on('mouseover', function(d, i){
-                    Tooltip
-                    .style("opacity", 1)
-                  })
-                  .on('mouseout', function(d, i){
-                    Tooltip
-                    .style("opacity", 0)
-                  })
-                  .on('mousemove', function(d, i) {
-                    Tooltip
-                      .html("Type " + i.key)
-                      .style("position", "relative")
-                      .style("left", (d3.pointer(d)[0]+100) + "px")
-                      .style("top", (d3.pointer(d)[1]-350) + "px")
-                  })
-                  .selectAll("rect")
-                  .data(function(d){return d;})
-                  .enter()
-                  .append("rect")
-                  .attr("x", d => (dimensions.margin.left + (dimensions.width/4))/2 - xScale.bandwidth()/4)
-                  .attr("y", d => yScale(d[1]))
-                  .attr("height", d => yScale(d[0]) - yScale(d[1]))
-                  .attr("width", d => xScale.bandwidth()/2)
+    // create a tooltip
+    var Tooltip = d3.select("#stacked_bar")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+    .html("Type: <br> Count: ")
+
+    createStackedBars()
 
     createYAxisLabel(svg, "Secondary types for selection", -200, 0)
 
@@ -339,13 +300,9 @@ export function heatmap(dataset){
           for(var i = 0; i < types.length - 1; i++){
             var key = types[i]
             var value = groupedData.get(key)
-            // console.log(groupedData.get(key)
             if(value > 0)
               dataSelectedHeatmap.push({"type": key, "count": value})
           }
-          // for (let [key, value] of groupedData){
-          //   dataSelectedHeatmap.push({"type": key, "count": value})
-          // }
           console.log(dataSelectedHeatmap)
 
 
@@ -375,16 +332,6 @@ export function heatmap(dataset){
           var stackedData = d3.stack()
                               .keys(selected_types)
                               (stack_data_formating)
-    // create a tooltip
-    var Tooltip = d3.select("#graph")
-    .append("div")
-    .style("opacity", 0)
-    .attr("class", "tooltip")
-    .style("background-color", "white")
-    .style("border", "solid")
-    .style("border-width", "2px")
-    .style("border-radius", "5px")
-    .style("padding", "5px")
 
           var bars = svg.append("g")
                         .selectAll("g")
@@ -401,14 +348,11 @@ export function heatmap(dataset){
                         .style("opacity", 0)
                       })
                       .on('mousemove', function(d, i) {
-                        console.log(i)
-                        console.log(d.screenX)
-                        console.log(d3.pointer(d  ))
                         Tooltip
-                          .html("Type " + i.key)
+                          .html("Type: " + "<span style='" + "color:" + colorScale(i.key) + ";'>" + i.key + "</span>" + "<br>Count: " + obj[i.key])
                           .style("position", "relative")
-                          .style("left", (d3.pointer(d)[0]+100) + "px")
-                          .style("top", (d3.pointer(d)[1]-350) + "px")
+                          .style("left", (d3.pointer(d)[0] + 20) + "px")
+                          .style("top", (d3.pointer(d)[1] - dimensions.height) + "px")
                         })
                         .selectAll("rect")
                         .data(function(d){return d;})
@@ -418,13 +362,6 @@ export function heatmap(dataset){
                         .attr("y", d => yScale(d[1]))
                         .attr("height", d => yScale(d[0]) - yScale(d[1]))
                         .attr("width", d => xScale.bandwidth()/2)
-
-
-
-          // var xAxisGen = d3.axisBottom(xScale)
-          // var xAxis = svg.append("g")
-          //             .call(xAxisGen)
-          //             .style("transform", `translateY(${dimensions.height-dimensions.margin.bottom}px)`)
 
           const yAxisTicks = yScale.ticks().filter(tick => Number.isInteger(tick));
           var yAxisGen = d3.axisLeft().scale(yScale).tickValues(yAxisTicks).tickFormat(d3.format("d"));
