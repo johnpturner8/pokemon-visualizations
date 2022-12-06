@@ -106,6 +106,7 @@ export function pokeStats(dataset){
   var current = dataset.filter(d => d.english_name == 'Bulbasaur')[0]
   
   var bars = new Array(dimensions.num)
+  var bartext = new Array(dimensions.num)
   var images = new Array(dimensions.num)
   var names = new Array(dimensions.num)
   var types = new Array(dimensions.num)
@@ -120,6 +121,18 @@ export function pokeStats(dataset){
       .attr("width", x.bandwidth())
       .attr("height", function(d, i) { return dimensions.height - dimensions.margin.bottom - y(current[statIds[i]]); })
       .attr("fill", "#69b3a2")
+    bartext[n] = svg.selectAll("bartext")
+    .data(stats)
+    .enter()
+    .append("text")
+      .attr("x", function(d, i) { return (x(d)) + x.bandwidth()/2 + (dimensions.width*n); })
+      .attr("y", function(d, i) { return y(current[statIds[i]]) - 2; })
+      .text(function(d, i) { return current[statIds[i]]; })
+      .attr("font-family" , "sans-serif")
+      .attr("font-size" , "10px")
+      .attr("fill" , "black")
+      .attr("text-anchor", "middle");
+
     images[n] = svg.append("svg:image")
       .attr('x', dimensions.width*(n+.5) + dimensions.margin.left - 60)
       .attr('y', 40)
@@ -139,7 +152,7 @@ export function pokeStats(dataset){
     types[n] =
         svg.append('text')
         .attr('x', dimensions.width*(n) + dimensions.margin.left + 20)
-        .attr('y', 20)
+        .attr('y', 15)
         .style("font-size", "14px")
         .attr("dx", "-.8em")
         .attr("dy", "1em")
@@ -165,6 +178,11 @@ export function pokeStats(dataset){
       bars[num].transition()
         .attr("y", function(d, i) { return y(0); })
         .attr("height", function(d, i) { return dimensions.height - dimensions.margin.bottom - y(0); })
+      
+      bartext[num].transition()
+          .attr("y", function(d, i) { return y(0) - 2; })
+          .text()
+
       images[num]
           .attr("xlink:href", null);
 
@@ -178,6 +196,22 @@ export function pokeStats(dataset){
       bars[num].transition()
           .attr("y", function(d, i) { return y(current[statIds[i]]); })
           .attr("height", function(d, i) { return dimensions.height - dimensions.margin.bottom - y(current[statIds[i]]); })
+
+
+      bartext[num].transition()
+          .attr("y", function(d, i) { return y(current[statIds[i]]) - 2; })
+          .text(function(d, i) { return current[statIds[i]]; })
+      // svg.selectAll("bartext")
+      //     .data(stats)
+      //     .enter()
+      //     .append("text")
+      //       .attr("x", function(d, i) { return (x(d)) + x.bandwidth()/2 + (dimensions.width*n); })
+      //       .attr("y", function(d, i) { return y(current[statIds[i]]) - 2; })
+      //       .text(function(d, i) { return current[statIds[i]]; })
+      //       .attr("font-family" , "sans-serif")
+      //       .attr("font-size" , "10px")
+      //       .attr("fill" , "black")
+      //       .attr("text-anchor", "middle");
 
       images[num]
             .attr("xlink:href", `https://img.pokemondb.net/artwork/${getImageName(name)}.jpg`);
