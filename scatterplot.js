@@ -1,8 +1,8 @@
 import { drawStats } from "./pokeStats.js";
 
-var maxSelected = 3; //should be same as num in pokeStats
-var sinceSelected = [0, 0, 0];
-var selected = [null, null, null] 
+var maxSelected = 6; //should be same as num in pokeStats
+var sinceSelected = [0, 0, 0, 0, 0, 0];
+var selected = [null, null, null, null, null, null] 
 
 //filters
 var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]
@@ -109,7 +109,7 @@ export function scatterplot(dataset){
               .enter()
               .append("circle")
                 .attr("class", "dot")
-                .attr("id", d => {d.english_name})
+                // .attr("id", d => {"n" + d.english_name.replace(/[^a-zA-Z]/g, "")})
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y)
                 .attr("fill", d => d.color)
@@ -143,9 +143,7 @@ export function scatterplot(dataset){
                   var ind = selected.indexOf(null)
                   if(ind == -1){
                     var max = Math.max(...sinceSelected);
-                    ind = sinceSelected.indexOf(max)
-                    d3.select(`#${selected[ind]}`)
-                      .attr("stroke-width", "0px")
+                    ind = sinceSelected.indexOf(max);
                   }
                   selected[ind] = i.english_name;
                   for(var num = 0; num < maxSelected; num++){
@@ -165,6 +163,14 @@ export function scatterplot(dataset){
                   d3.select(this)
                     .attr("stroke-width", "0px")
                 }
+                n.each(function (d) {
+                  if (selected.includes(d.english_name)) {
+                    d3.select(this).attr("stroke", "black").attr("stroke-width", "2px")
+                  }
+                  else{
+                    d3.select(this).attr("stroke-width", "0px")
+                  }
+                });
               })
     
     n.transition().duration(500)
