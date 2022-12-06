@@ -1,8 +1,8 @@
 import { drawStats } from "./pokeStats.js";
 
-var maxSelected = 3; //should be same as num in pokeStats
-var sinceSelected = [0, 0, 0];
-var selected = [null, null, null] 
+var maxSelected = 6; //should be same as num in pokeStats
+var sinceSelected = [0, 0, 0, 0, 0, 0];
+var selected = [null, null, null, null, null, null] 
 
 //filters
 var types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy", "none"]

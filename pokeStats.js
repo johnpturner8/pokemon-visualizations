@@ -58,15 +58,15 @@ function getImageName(name){
 
 export function pokeStats(dataset){
   var dimensions = {
-    num: 3,
-    width: 300,
-    height: 200,
+    num: 6,
+    width: 200,
+    height: 340,
     margin:{
-        top: 10,
+        top: 120,
         bottom: 80,
-        right: 100,
-        left: 100
-    }
+        right: 20,
+        left: 20,
+      }
   }
 
   var svg = d3.select("#stats")
@@ -121,15 +121,15 @@ export function pokeStats(dataset){
       .attr("height", function(d, i) { return dimensions.height - dimensions.margin.bottom - y(current[statIds[i]]); })
       .attr("fill", "#69b3a2")
     images[n] = svg.append("svg:image")
-      .attr('x', dimensions.width*(n+1) - dimensions.margin.right + 20)
-      .attr('y', dimensions.margin.top + 30)
+      .attr('x', dimensions.width*(n+.5) + dimensions.margin.left - 60)
+      .attr('y', 40)
       .attr('width', 80)
       .attr('height', 80)
       .attr("xlink:href", `https://img.pokemondb.net/artwork/${getImageName(current.english_name)}.jpg`);
     names[n] = 
     svg.append('text')
-      .attr('x', dimensions.width*(n+1) - dimensions.margin.right + 20)
-      .attr('y', dimensions.margin.top + 10)
+      .attr('x', dimensions.width*(n) + dimensions.margin.left + 20)
+      .attr('y', 10)
       .style("font-size", "14px")
       .attr("dx", "-.8em")
       .attr("dy", "0em")
@@ -138,8 +138,8 @@ export function pokeStats(dataset){
 
     types[n] =
         svg.append('text')
-        .attr('x', dimensions.width*(n+1) - dimensions.margin.right + 20)
-        .attr('y', dimensions.margin.top + 10)
+        .attr('x', dimensions.width*(n) + dimensions.margin.left + 20)
+        .attr('y', 20)
         .style("font-size", "14px")
         .attr("dx", "-.8em")
         .attr("dy", "1em")
