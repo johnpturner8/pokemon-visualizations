@@ -64,8 +64,8 @@ export function pokeStats(dataset){
     margin:{
         top: 120,
         bottom: 80,
-        right: 20,
-        left: 20,
+        right: 10,
+        left: 40,
       }
   }
 
